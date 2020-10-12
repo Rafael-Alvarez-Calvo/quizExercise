@@ -1,5 +1,3 @@
-// let categorias = ["Deportes", "Pokemon", "Ciencia"];
-
 function pintarMenu(){
 
     let bodySelector = document.querySelector("body");
@@ -8,7 +6,7 @@ function pintarMenu(){
     contenedorLogo.className = "contenedorLogo";
 
     let logo = document.createElement("img");
-    logo.src = "img/logo.png";
+    logo.src = "img/Logo.png";
     logo.className = "logo";
 
     bodySelector.prepend(contenedorLogo);
@@ -28,8 +26,6 @@ function pintarMenu(){
     divCategorias.className = "divCategorias";
     bodySelector.appendChild(divCategorias);
 
-    // for (let i = 0; i < categorias.length; i++){
-
     let inputs = document.createElement("button");
 
     inputs.className = "categorias"
@@ -42,7 +38,6 @@ function pintarMenu(){
 
     
     divCategorias.appendChild(inputs);
-    // } 
 
 }
 pintarMenu();
