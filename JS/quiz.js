@@ -1,82 +1,110 @@
 let numero = 0;
 let contador = 0;
+let contadorPregunta = 0;
 
-// let botonesResetMenu = ["Jugar de nuevo","Volver al menú"]
+function initDataBase(){
 
-let preguntas = [
-    {
-        Img: `img/louis-Armstrong.jpg`,
-        P : "¿Qué instrumento tocaba Louis Amstrong?",
-        R : ["Piano","Trompeta","Tambor","Guitarra"],
-        RespuestaCorrecta : "Trompeta"
-    },
+    var firebaseConfig = {
+        apiKey: "AIzaSyCr5-k5elpVRcTIuhY6WTY_poj4Bg8wYVs",
+        authDomain: "quizzer-project-98194.firebaseapp.com",
+        databaseURL: "https://quizzer-project-98194.firebaseio.com",
+        projectId: "quizzer-project-98194",
+        storageBucket: "quizzer-project-98194.appspot.com",
+        messagingSenderId: "361995614965",
+        appId: "1:361995614965:web:3b55e3b5bc7d0911e2e3bc"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+}
+initDataBase();
 
-    {
-        Img: `img/Arbeloa2012.jpg`,
-        P : "¿En que equipo jugó arbeloa antes de jugar en el Real Madrid?",
-        R : ["R.M. Castilla","R.C.D. La Coruña","Liverpool F.C","West Ham United F.C."],
-        RespuestaCorrecta : "Liverpool F.C"
-    },
-    {
-        Img: `img/maraton.jpeg`,
-        P : "En una carrera, un corredor adelanta al que va segundo. ¿En que posicion se coloca?",
-        R : ["Tercero","Primero","Segundo"],
-        RespuestaCorrecta : "Segundo"
-    },
-    {
-        Img: `img/Gengar.png`,
-        P : "¿Cual es este pokemon?",
-        R : ["Gastly","Gengar","Haunter","Drowzee"],
-        RespuestaCorrecta : "Gengar"
-    }
-];
+let database = firebase.database();
 
+function getQuestions(contadorPregunta){
 
-function pintarPreguntasRespuestas(contador){
+    let preguntas = database.ref('PreguntasQuiz/');
+    let contenido = preguntas.child('PreguntasQuiz/' + [contadorPregunta])
+
+    preguntas.on("value",(snapshot) =>{
+
+        contenido = snapshot.val();
+
+        contenido.map((textObject) =>{
+
+            // pintarPreguntasRespuestas(textObject.Img);
+            pintarPreguntas(textObject.P);
+            // console.log(pintarPreguntas);
+            pintarRespuestas(textObject.R);
+            // console.log(contenido);
+
+            // console.log(contenido.textObject.P)
+
+        })
+
+    })
+
+}
+
+function pintarPreguntas(content,contador){
 
     numero++;
+    contador = 0;
 
-    let bodySelector = document.querySelector("body");
+    for (let i = 0; i < content[contador].length; i++) {
 
-    let formulario = document.createElement("form");
-    formulario.className = "formulario";
-    bodySelector.prepend(formulario);
+        let bodySelector = document.querySelector("body");
+
+        let formulario = document.createElement("form");
+        formulario.className = "formulario";
+        bodySelector.prepend(formulario);
+        
+        // let imagen = document.createElement("img");
+        // imagen.className = "imagenPreguntas"
+        // // imagen.src = preguntas[contador].Img;
+        // // imagen.src = content[contador].Img;
+        // formulario.appendChild(imagen);
+
+        let legend = document.createElement("legend");
+        legend.tagName = "legend";
+        // legend.innerText = preguntas[contador].P;
+        legend.innerText = content;
+        formulario.appendChild(legend);
+        
+        let contenedorNumeroPregunta = document.createElement("div");
+        contenedorNumeroPregunta.className = "contenedorNumeroPregunta";
+
+        let numeroPregunta = document.createElement("h1");
+        numeroPregunta.className = "numeroPregunta";
+        numeroPregunta.innerText = "Pregunta " + numero;
+
+        bodySelector.prepend(contenedorNumeroPregunta);
+
+        contenedorNumeroPregunta.appendChild(numeroPregunta);
+        
+    }
     
-    let imagen = document.createElement("img");
-    imagen.className = "imagenPreguntas"
-    imagen.src = preguntas[contador].Img;
-    formulario.appendChild(imagen);
-    
-    let legend = document.createElement("legend");
-    legend.tagName = "legend";
-    legend.innerText = preguntas[contador].P;
-    formulario.appendChild(legend);
+}
 
-    let contenedorNumeroPregunta = document.createElement("div");
-    contenedorNumeroPregunta.className = "contenedorNumeroPregunta";
+function pintarRespuestas(content){
 
-    let numeroPregunta = document.createElement("h1");
-    numeroPregunta.className = "numeroPregunta";
-    numeroPregunta.innerText = "Pregunta " + numero;
+    let formulario = document.querySelector("form");
+    let divRespuestas = document.createElement("div");
+    divRespuestas.className = "divRespuestas";
 
-    bodySelector.prepend(contenedorNumeroPregunta);
+    for (let i = 0; i < content.length; i++) {
 
-    contenedorNumeroPregunta.appendChild(numeroPregunta);
-    
-    for (let i = 0; i < preguntas[contador].R.length; i++) {
-
-        let divRespuestas = document.createElement("div");
-        divRespuestas.className = "divRespuestas";
-     
         let inputs = document.createElement("button");
         
         inputs.tagName = "button"
-        inputs.innerText = preguntas[contador].R[i];
-        inputs.setAttribute("id", preguntas[contador].R[i]);
+        // inputs.innerText = preguntas[contador].R[i];
+        inputs.innerText = content[i];
+        // inputs.setAttribute("id", preguntas[contador].R[i]);
+        inputs.setAttribute("id", content[i]);
         
         inputs.setAttribute("type", "button");
         inputs.setAttribute("name", "respuesta");
-        inputs.setAttribute("value", preguntas[contador].R[i]);
+        // inputs.setAttribute("value", preguntas[contador].R[i]);
+        inputs.setAttribute("value", content[i]);
 
         formulario.appendChild(divRespuestas);
         divRespuestas.appendChild(inputs);
@@ -84,7 +112,7 @@ function pintarPreguntasRespuestas(contador){
     }
 }
 
-pintarPreguntasRespuestas(contador);
+// pintarPreguntasRespuestas(contador);
 
 let aciertos = 0;
 
@@ -212,6 +240,8 @@ function pintarQuizResult() {
     // }
     
 }
+
+getQuestions(contadorPregunta);
 
 // let irMenu = document.getElementById("Jugar de nuevo").addEventListener("click", function(){
 
