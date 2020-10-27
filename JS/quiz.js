@@ -19,69 +19,64 @@ function initDataBase(){
 initDataBase();
 
 let database = firebase.database();
+let dataStorage = firebase.storage();
 
-function getQuestions(contadorPregunta){
+// fetch("http://localhost:8080/getJSON");
 
-    let preguntas = database.ref('PreguntasQuiz/');
-    let contenido = preguntas.child('PreguntasQuiz/' + [contadorPregunta])
+function getQuestions(){
 
-    preguntas.on("value",(snapshot) =>{
+    return new Promise(resolve => {
 
-        contenido = snapshot.val();
-
-        contenido.map((textObject) =>{
-
-            // pintarPreguntasRespuestas(textObject.Img);
-            pintarPreguntas(textObject.P);
-            // console.log(pintarPreguntas);
-            pintarRespuestas(textObject.R);
-            // console.log(contenido);
-
-            // console.log(contenido.textObject.P)
+        let preguntas = database.ref('PreguntasQuiz/');
+        preguntas.on("value",(snapshot) =>{
+            resolve(snapshot.val());
 
         })
-
     })
-
 }
 
-function pintarPreguntas(content,contador){
+function pintarPreguntas(content,image){
+
+    try {
+
+        let getImages = dataStorage.ref('/').child(image);
+        getImages.getDownloadURL().then((url) =>{
+            console.log(url);
+            let imagen = document.createElement("img");
+            imagen.className = "imagenPreguntas"
+            imagen.src = url;
+            formulario.prepend(imagen);
+    
+        })
+    }
+
+    catch(e) {
+        console.error(e);
+    }
 
     numero++;
-    contador = 0;
 
-    for (let i = 0; i < content[contador].length; i++) {
+    let bodySelector = document.querySelector("body");
 
-        let bodySelector = document.querySelector("body");
+    let formulario = document.createElement("form");
+    formulario.className = "formulario";
+    bodySelector.prepend(formulario);
+    
+    let legend = document.createElement("legend");
+    legend.tagName = "legend";
+    legend.innerText = content;
+    formulario.appendChild(legend);
+    
+    let contenedorNumeroPregunta = document.createElement("div");
+    contenedorNumeroPregunta.className = "contenedorNumeroPregunta";
 
-        let formulario = document.createElement("form");
-        formulario.className = "formulario";
-        bodySelector.prepend(formulario);
-        
-        // let imagen = document.createElement("img");
-        // imagen.className = "imagenPreguntas"
-        // // imagen.src = preguntas[contador].Img;
-        // // imagen.src = content[contador].Img;
-        // formulario.appendChild(imagen);
+    let numeroPregunta = document.createElement("h1");
+    numeroPregunta.className = "numeroPregunta";
+    numeroPregunta.innerText = "Pregunta " + numero;
 
-        let legend = document.createElement("legend");
-        legend.tagName = "legend";
-        // legend.innerText = preguntas[contador].P;
-        legend.innerText = content;
-        formulario.appendChild(legend);
-        
-        let contenedorNumeroPregunta = document.createElement("div");
-        contenedorNumeroPregunta.className = "contenedorNumeroPregunta";
+    bodySelector.prepend(contenedorNumeroPregunta);
 
-        let numeroPregunta = document.createElement("h1");
-        numeroPregunta.className = "numeroPregunta";
-        numeroPregunta.innerText = "Pregunta " + numero;
-
-        bodySelector.prepend(contenedorNumeroPregunta);
-
-        contenedorNumeroPregunta.appendChild(numeroPregunta);
-        
-    }
+    contenedorNumeroPregunta.appendChild(numeroPregunta);
     
 }
 
@@ -96,14 +91,10 @@ function pintarRespuestas(content){
         let inputs = document.createElement("button");
         
         inputs.tagName = "button"
-        // inputs.innerText = preguntas[contador].R[i];
         inputs.innerText = content[i];
-        // inputs.setAttribute("id", preguntas[contador].R[i]);
         inputs.setAttribute("id", content[i]);
-        
         inputs.setAttribute("type", "button");
         inputs.setAttribute("name", "respuesta");
-        // inputs.setAttribute("value", preguntas[contador].R[i]);
         inputs.setAttribute("value", content[i]);
 
         formulario.appendChild(divRespuestas);
@@ -112,95 +103,108 @@ function pintarRespuestas(content){
     }
 }
 
-// pintarPreguntasRespuestas(contador);
+// let aciertos = 0;
 
-let aciertos = 0;
+// localStorage.setItem("Aciertos", aciertos);
 
-localStorage.setItem("Aciertos", aciertos);
-     
-let boton = document.addEventListener("click", function(e){
+function comprobarResultado(contenido){
 
-    if(e.target.id == preguntas[contador].RespuestaCorrecta){
+    let botones = document.querySelectorAll("button");
+         
+    botones.forEach((boton) =>{
+        console.log(boton)
+        boton.addEventListener("click", (e) =>{
 
-        e.target.className = "button green";
+            if(e.target.id == contenido[contadorPregunta].RespuestaCorrecta){
         
-        aciertos++;
-
-        localStorage.setItem("Aciertos", aciertos);
-
-        setTimeout(function() {
-
-            contador++;
-
-            if(contador < preguntas.length){
-
-                document.querySelector("form").remove();
-                document.querySelector("div").remove();
-                location.reload = pintarPreguntasRespuestas(contador);
-
-            }else{
-
-                document.querySelector("form").remove();
-                document.querySelector("div").remove();
-                pintarQuizResult();
-            }
-                    
-        }, 1000);
-    
-    }
-        
-    console.log(localStorage);
-    
-    if(e.target.id !== preguntas[contador].RespuestaCorrecta){
-    
-        e.target.className="button red";
-
-        document.querySelectorAll("button").forEach(function(boton){
+                e.target.className = "button green";
                 
-            if(boton.id == preguntas[contador].RespuestaCorrecta){
-
-                boton.className = "button green"
+                // aciertos++;
+        
+                // localStorage.setItem("Aciertos", aciertos);
+        
+                setTimeout(function() {
+        
+                    contadorPregunta++;
+        
+                    if(contadorPregunta < contenido.length){
+        
+                        document.querySelector("form").remove();
+                        document.querySelector("div").remove();
+                        location.reload = Llamada();
+                        
+        
+                    }else{
+        
+                        document.querySelector("form").remove();
+                        document.querySelector("div").remove();
+                        pintarQuizResult();
+                    }
+                            
+                }, 1000);
+            
             }
-        })
-    
-        setTimeout(function() {
-
-            contador++;
-    
-            if(contador < preguntas.length){
-
-                document.querySelector("form").remove();
-                document.querySelector("div").remove();
-                location.reload = pintarPreguntasRespuestas(contador);
-
-            }else{
-
-                document.querySelector("form").remove();
-                document.querySelector("div").remove();
-                pintarQuizResult();
+                
+            // console.log(localStorage);
+            
+            if(e.target.id !== contenido[contadorPregunta].RespuestaCorrecta){
+            
+                e.target.className="button red";
+        
+                document.querySelectorAll("button").forEach((boton) =>{
+                        
+                    if(boton.id == contenido[contadorPregunta].RespuestaCorrecta){
+        
+                        setTimeout(() =>{
+                            
+                            boton.className = "button green"
+        
+                        },200) 
+                    }
+                });
+            
+                setTimeout(() => {
+        
+                    contadorPregunta++;
+            
+                    if(contadorPregunta < contenido.length){
+        
+                        document.querySelector("form").remove();
+                        document.querySelector("div").remove();
+                        location.reload = Llamada()
+        
+                    }else{
+        
+                        document.querySelector("form").remove();
+                        document.querySelector("div").remove();
+                        pintarQuizResult();
+                    }
+            
+                }, 1000);
+            
             }
+        
+            // if(e.target.id == botonesResetMenu[0]){
+        
+            //     setTimeout(function(){
+        
+            //         window.location = "quiz.html"
+            //     },1000)
+            // }
+        
+            // if(e.target.id == botonesResetMenu[1]){
+        
+            //     setTimeout(function(){
+        
+            //         window.location = "menu.html"
+            //     },1000)
+            // }
+        
+        });
+    })
     
-        }, 1000);
     
-    }
-
-    // if(e.target.id == botonesResetMenu[0]){
-
-    //     setTimeout(function(){
-
-    //         window.location = "quiz.html"
-    //     },1000)
-    // }
-
-    // if(e.target.id == botonesResetMenu[1]){
-
-    //     setTimeout(function(){
-
-    //         window.location = "menu.html"
-    //     },1000)
-    // }
-
-});
+}
 
 function pintarQuizResult() {
 
@@ -241,7 +245,23 @@ function pintarQuizResult() {
     
 }
 
-getQuestions(contadorPregunta);
+async function Llamada(){
+
+    try {
+        let contenido = await getQuestions(contadorPregunta);
+        
+        pintarPreguntas(contenido[contadorPregunta].P, contenido[contadorPregunta].Img);
+        pintarRespuestas(contenido[contadorPregunta].R);
+    
+        //console.log(document.querySelectorAll("button"));
+        comprobarResultado(contenido);
+    }
+    catch(e) {
+        console.log(e);
+    }
+}
+
+Llamada();
 
 // let irMenu = document.getElementById("Jugar de nuevo").addEventListener("click", function(){
 

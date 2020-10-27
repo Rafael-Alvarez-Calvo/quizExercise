@@ -27,6 +27,7 @@ function pintarMenu(){
 
     nickNameBox.setAttribute("id","nickNameBox");
     nickNameBox.setAttribute("type","text");
+    nickNameBox.value="asdad";
     // nickNameBox.setAttribute("value", "");
 
     registrarNick.setAttribute("id","registrarNick");
@@ -93,17 +94,27 @@ function registrarJugador(){
         },600);
 
         let newNickName = {
-            Nick : getValueNick   
+
+            Nick : getValueNick,
+            Deportes : 0,
+            Ciencia : 0,
+            Matematicas : 0
+            
         };
 
-        let newPostKey = database.ref().child('Jugadores').push().getValueNick;
-
-        let updates = {};
-        updates['Jugadores/' + newPostKey] = newNickName;
-        
-        console.log(newNickName);
-
-        return database.ref().update(updates); 
+        // console.log(database)
+        let newPostKey = database.ref(`/Jugadores/${getValueNick}`);
+        newPostKey.once("value", (value) => {
+            if(value.val())
+            {
+                console.log("Ya estás registrado");
+                //Cargas la partida
+            }
+            else {
+                newPostKey.set(newNickName);
+            }
+        });
+        return(newNickName); 
     });
     
 }
