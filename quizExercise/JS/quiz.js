@@ -1,29 +1,6 @@
-// const { resolve } = require("path");
-
-// const { resolve } = require("path");
-
 let numero = 0;
 let contador = 0;
 let contadorPregunta = 0;
-
-// function initDataBase(){
-
-//     var firebaseConfig = {
-//         apiKey: "AIzaSyCr5-k5elpVRcTIuhY6WTY_poj4Bg8wYVs",
-//         authDomain: "quizzer-project-98194.firebaseapp.com",
-//         databaseURL: "https://quizzer-project-98194.firebaseio.com",
-//         projectId: "quizzer-project-98194",
-//         storageBucket: "quizzer-project-98194.appspot.com",
-//         messagingSenderId: "361995614965",
-//         appId: "1:361995614965:web:3b55e3b5bc7d0911e2e3bc"
-//     };
-    
-//     firebase.initializeApp(firebaseConfig);
-// }
-// initDataBase();
-
-// let database = firebase.database();
-// let dataStorage = firebase.storage();
 
 async function getQuestions(){
 
@@ -115,7 +92,7 @@ function comprobarResultado(contenido){
     let botones = document.querySelectorAll("button");
          
     botones.forEach((boton) =>{
-        console.log(boton)
+        
         boton.addEventListener("click", (e) =>{
 
             if(e.target.id == contenido[contadorPregunta].RespuestaCorrecta){
@@ -180,7 +157,7 @@ function comprobarResultado(contenido){
         
                         document.querySelector("form").remove();
                         document.querySelector("div").remove();
-                        pintarQuizResult();
+                        pintarQuizResult(inputsAddAnswers);
                     }
             
                 }, 1000);
@@ -209,9 +186,10 @@ function comprobarResultado(contenido){
     
 }
 
-function pintarQuizResult() {
+function pintarQuizResult(inputsAddAnswers) {
 
     // let botonesResetMenu = ["Jugar de nuevo","Volver al menú"]
+    inputsAddAnswers = [0,1,2,3];
 
     let bodySelector = document.querySelector("body");
 
@@ -230,6 +208,34 @@ function pintarQuizResult() {
     formulario.appendChild(puntuacion);
 
     document.getElementById("Score").innerText = "Tu resultado ha sido: " + localStorage.getItem("Aciertos") + "/4";
+
+    let addQuestionTittle = document.createElement("h3");
+    addQuestionTittle.innerText = "¿Te gustaría añadir una pregunta nueva a quizzer?";
+    addQuestionTittle.setAttribute("id", "addQuestionTittle");
+    formulario.appendChild(addQuestionTittle);
+
+    let addQuestionLabel = document.createElement("label");
+    addQuestionLabel.innerText = "Añade tu pregunta aqui";
+    formulario.appendChild(addQuestionLabel)
+
+    let addQuestion = document.createElement("input");
+    addQuestion.setAttribute("type", "text");
+    addQuestionLabel.appendChild(addQuestion);
+
+    for(i = 0 ; i < inputsAddAnswers.length; i++){
+
+        let inputsAnswers = document.createElement("input");
+        inputsAnswers.placeholder = "Introduce una respuesta aquí";
+        inputsAnswers.setAttribute("type", "text")
+        formulario.appendChild(inputsAnswers);
+        console.log(inputsAddAnswers);
+
+    }
+
+
+
+
+    
 
     // for(i = 0; i < botonesResetMenu.length; i++){
 
@@ -251,12 +257,12 @@ function pintarQuizResult() {
 async function Llamada(){
 
     try {
+
         let contenido = await getQuestions(contadorPregunta);
-        console.log(contenido);
+        // console.log(contenido);
         pintarPreguntas(contenido[contadorPregunta].P, contenido[contadorPregunta].Img);
         pintarRespuestas(contenido[contadorPregunta].R);
     
-        //console.log(document.querySelectorAll("button"));
         comprobarResultado(contenido);
     }
     catch(e) {

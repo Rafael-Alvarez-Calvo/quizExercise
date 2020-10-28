@@ -1,21 +1,3 @@
-
-function initDataBase(){
-
-    var firebaseConfig = {
-        apiKey: "AIzaSyCr5-k5elpVRcTIuhY6WTY_poj4Bg8wYVs",
-        authDomain: "quizzer-project-98194.firebaseapp.com",
-        databaseURL: "https://quizzer-project-98194.firebaseio.com",
-        projectId: "quizzer-project-98194",
-        storageBucket: "quizzer-project-98194.appspot.com",
-        messagingSenderId: "361995614965",
-        appId: "1:361995614965:web:3b55e3b5bc7d0911e2e3bc"
-    };
-    
-    firebase.initializeApp(firebaseConfig);
-}
-initDataBase();
-
-let database = firebase.database();
 let bodySelector = document.querySelector("body");
 let contenedorNickName = document.createElement("div");
 let nickNameBox = document.createElement("input");
@@ -73,59 +55,72 @@ function registrarJugador(){
             contenedorNickName.className = "contenedorHidden";
         },550)
         
-        setTimeout(() =>{
-
-            let divEmpezar = document.createElement("div");
-            divEmpezar.className = "divEmpezar";
-            bodySelector.appendChild(divEmpezar);
-
-            let start = document.createElement("button");
-
-            start.className = "start"
-            start.innerText = "EMPEZAR A JUGAR";
-
-            start.setAttribute("id", "start");
-            start.setAttribute("type", "button");
-            start.setAttribute("name", "start");
-            start.setAttribute("value", "start");
-
-            divEmpezar.appendChild(start);
-
-        },600);
-
+        
         let newNickName = {
 
-            Nick : getValueNick,
-            Deportes : 0,
-            Ciencia : 0,
-            Matematicas : 0
+            Nick : getValueNick
             
         };
 
+        fetch('http://localhost:8080/Player',{
+            method : "POST",
+            headers : {
+                'Content-Type' : 'application/json'
+            },
+            body : JSON.stringify(newNickName)
+        })
+        .then(() =>{
+
+            setTimeout(() =>{
+
+                let divEmpezar = document.createElement("div");
+                divEmpezar.className = "divEmpezar";
+                bodySelector.appendChild(divEmpezar);
+    
+                let start = document.createElement("button");
+    
+                start.className = "start"
+                start.innerText = "EMPEZAR A JUGAR";
+    
+                start.setAttribute("id", "start");
+                start.setAttribute("type", "button");
+                start.setAttribute("name", "start");
+                start.setAttribute("value", "start");
+    
+                divEmpezar.appendChild(start);
+    
+                comenzarPartida();
+    
+            },600);
+    
+        })
+
         // console.log(database)
-        let newPostKey = database.ref(`/Jugadores/${getValueNick}`);
-        newPostKey.once("value", (value) => {
-            if(value.val())
-            {
-                console.log("Ya estás registrado");
-                //Cargas la partida
-            }
-            else {
-                newPostKey.set(newNickName);
-            }
-        });
-        return(newNickName); 
+        // let newPostKey = database.ref(`/Jugadores/Nick${getValueNick}`);
+        // newPostKey.once("value", (value) => {
+        //     if(value.val())
+        //     {
+        //         console.log("Ya estás registrado");
+        //         //Cargas la partida
+        //     }
+        //     else {
+        //         newPostKey.set(newNickName);
+        //     }
+        // });
+        // return(newNickName); 
     });
     
 }
 
 registrarJugador();
 
-// let Empezar = document.querySelector("button").addEventListener("click", function(){
+function comenzarPartida(){
+    
+    document.getElementById("start").addEventListener("click", () =>{
+        setTimeout(function(){
 
-//     setTimeout(function(){
-
-//         window.location = "quiz.html";
-
-//     },500);
-// }) ;
+            window.location = "quiz.html";
+            
+        },500);
+    })
+}

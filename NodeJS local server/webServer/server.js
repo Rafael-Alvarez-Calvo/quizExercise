@@ -26,7 +26,8 @@ const listenPort = 8080;
 const server = http.createServer((request, response) =>{
 
     const desbloqueoCORS = {
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Header' : '*'
     };
     
     if(request.url === "/getJSON" ){
@@ -44,14 +45,34 @@ const server = http.createServer((request, response) =>{
             })
     }
 
-    if(request.url === "/image"){
+    if(request.url === "/Player"){
 
-        response.writeHead(200,{...desbloqueoCORS, 'Content-Type' : 'application/json'});
-        console.log(firebase)
-        // let getImages = firebase.
-        // storageBucket().ref('/').child(response);
-        // getImages.getDownloadURL().then(url => console.log(url))
+        let contenido = JSON.parse(response);
+        
+        let player = database.ref('Jugadores/').child('Nick');
+        
+        
+        response.writeHead(200, {...desbloqueoCORS, 'Content-Type' : 'application/json'});
+        
+        player.val(contenido.Nick);
+        response.end("ok")
+
+            // player.once("value", (snapshot) =>{
+            //     contenido = snapshot.val();
+            //     response.write(JSON.stringify(contenido));
+            //     response.end();
+            // })
+
     }
+
+    // if(request.url === "/image"){
+
+    //     response.writeHead(200,{...desbloqueoCORS, 'Content-Type' : 'application/json'});
+    //     console.log(firebase)
+    //     // let getImages = firebase.
+    //     // storageBucket().ref('/').child(response);
+    //     // getImages.getDownloadURL().then(url => console.log(url))
+    // }
     
 });
 

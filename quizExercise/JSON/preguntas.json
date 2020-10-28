@@ -28,5 +28,14 @@
             "RespuestaCorrecta" : "Gengar"
 
         }
+    ],
+
+    "Jugadores" : [
+        {    
+            "Nick" : "", 
+            "Deportes" : 0,  
+            "Ciencia" : 0,
+            "Arte" : 0
+        }
     ]
 }
