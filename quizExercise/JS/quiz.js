@@ -1,58 +1,56 @@
+// const { resolve } = require("path");
+
+// const { resolve } = require("path");
+
 let numero = 0;
 let contador = 0;
 let contadorPregunta = 0;
 
-function initDataBase(){
+// function initDataBase(){
 
-    var firebaseConfig = {
-        apiKey: "AIzaSyCr5-k5elpVRcTIuhY6WTY_poj4Bg8wYVs",
-        authDomain: "quizzer-project-98194.firebaseapp.com",
-        databaseURL: "https://quizzer-project-98194.firebaseio.com",
-        projectId: "quizzer-project-98194",
-        storageBucket: "quizzer-project-98194.appspot.com",
-        messagingSenderId: "361995614965",
-        appId: "1:361995614965:web:3b55e3b5bc7d0911e2e3bc"
-    };
+//     var firebaseConfig = {
+//         apiKey: "AIzaSyCr5-k5elpVRcTIuhY6WTY_poj4Bg8wYVs",
+//         authDomain: "quizzer-project-98194.firebaseapp.com",
+//         databaseURL: "https://quizzer-project-98194.firebaseio.com",
+//         projectId: "quizzer-project-98194",
+//         storageBucket: "quizzer-project-98194.appspot.com",
+//         messagingSenderId: "361995614965",
+//         appId: "1:361995614965:web:3b55e3b5bc7d0911e2e3bc"
+//     };
     
-    firebase.initializeApp(firebaseConfig);
-}
-initDataBase();
+//     firebase.initializeApp(firebaseConfig);
+// }
+// initDataBase();
 
-let database = firebase.database();
-let dataStorage = firebase.storage();
+// let database = firebase.database();
+// let dataStorage = firebase.storage();
 
-// fetch("http://localhost:8080/getJSON");
+async function getQuestions(){
 
-function getQuestions(){
-
-    return new Promise(resolve => {
-
-        let preguntas = database.ref('PreguntasQuiz/');
-        preguntas.on("value",(snapshot) =>{
-            resolve(snapshot.val());
-
-        })
-    })
+    let response = await fetch("http://localhost:8080/getJSON")
+    let contenido = await response.json();
+            
+        return contenido;
+ 
 }
 
 function pintarPreguntas(content,image){
 
-    try {
+    // fetch("http://localhost:8080/getJSON")
+    //     .then(response => response.json())
+    //     .then((dataStorage) =>{
 
-        let getImages = dataStorage.ref('/').child(image);
-        getImages.getDownloadURL().then((url) =>{
-            console.log(url);
-            let imagen = document.createElement("img");
-            imagen.className = "imagenPreguntas"
-            imagen.src = url;
-            formulario.prepend(imagen);
+    //         resolve(dataStorage)
+    //         let getImages = dataStorage.ref('/').child(image);
+    //         getImages.getDownloadURL().then((url) =>{
+    //         console.log(url);
+    //         let imagen = document.createElement("img");
+    //         imagen.className = "imagenPreguntas"
+    //         imagen.src = url;
+    //         formulario.prepend(imagen);
     
-        })
-    }
-
-    catch(e) {
-        console.error(e);
-    }
+    //     })
+    //     })
 
     numero++;
 
@@ -61,6 +59,11 @@ function pintarPreguntas(content,image){
     let formulario = document.createElement("form");
     formulario.className = "formulario";
     bodySelector.prepend(formulario);
+
+    let imagen = document.createElement("img");
+    imagen.className = "imagenPreguntas"
+    imagen.src = image;
+    formulario.prepend(imagen);
     
     let legend = document.createElement("legend");
     legend.tagName = "legend";
@@ -249,7 +252,7 @@ async function Llamada(){
 
     try {
         let contenido = await getQuestions(contadorPregunta);
-        
+        console.log(contenido);
         pintarPreguntas(contenido[contadorPregunta].P, contenido[contadorPregunta].Img);
         pintarRespuestas(contenido[contadorPregunta].R);
     

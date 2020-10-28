@@ -1,28 +1,28 @@
 {
     "PreguntasQuiz" : [
         {
-            "Img": "img/louis-Armstrong.jpg",
+            "Img": "louis-Armstrong.jpg",
             "P" : "¿Qué instrumento tocaba Louis Amstrong?",
             "R" : ["Piano","Trompeta","Tambor","Guitarra"],
             "RespuestaCorrecta" : "Trompeta"
             
         },
         {
-            "Img": "img/Arbeloa2012.jpg",
+            "Img": "Arbeloa2012.jpg",
             "P" : "¿En que equipo jugó arbeloa antes de jugar en el Real Madrid?",
             "R": ["R.M. Castilla","R.C.D. La Coruña","Liverpool F.C","West Ham United F.C."],
             "RespuestaCorrecta" : "Liverpool F.C"
             
         },
         {
-            "Img": "img/maraton.jpeg",
+            "Img": "maraton.jpeg",
             "P" : "En una carrera, un corredor adelanta al que va segundo. ¿En que posicion se coloca?",
             "R" : ["Tercero","Primero","Segundo"],
             "RespuestaCorrecta" : "Segundo"
 
         },
         {
-            "Img": "img/Gengar.png",
+            "Img": "Gengar.png",
             "P": "¿Cual es este pokemon?",
             "R": ["Gastly","Gengar","Haunter","Drowzee"],
             "RespuestaCorrecta" : "Gengar"

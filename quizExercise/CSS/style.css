@@ -3,7 +3,7 @@
 } */
 
 body {
-    background: #fff;
+    background: #F8D189;
     font-family: 'Roboto', sans-serif;
     
     padding: 30px;
@@ -115,7 +115,7 @@ button:hover{
     display: flex;
     /* flex-direction: row; */
     justify-content: center;
-    transform: translate(0px,190px);
+    transform: translate(5px,190px);
     
     
     
@@ -130,15 +130,12 @@ button:hover{
     
 }
 
-
-
-
 .titulo{
 
     position: relative;
     
     text-align: center;
-    transform: translate(-10px,110px);
+    transform: translate(0px,110px);
     font-size: 40px;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     color: rgb(107, 233, 255);
@@ -172,7 +169,7 @@ button:hover{
     
 }
 
-.start:hover{
+.start:hover,.start:active{
 
     outline: none;
     border-radius: 10px;
@@ -198,7 +195,7 @@ button:hover{
     outline: none;
     border-radius: 5px;
     border-color: #41b6fa;
-    box-shadow: 0 0 10px 0.2px yellow;
+    box-shadow: 0 0 5px 0.2px yellow;
     background-color: #8ED6FF;
     color: white;
     margin-left: 20px;
@@ -215,9 +212,9 @@ button:hover{
 #nickNameBox{
     height: 20px;
     position: relative;
-    transform: translate(5px, 13px);
+    transform: translate(5px, 3px);
     border: 2px solid #41b6fa;
-    box-shadow: 0 0 10px .5px yellow;
+    box-shadow: 0 0 5px .2px yellow;
     border-radius: 5px;
     outline: none;
 }
