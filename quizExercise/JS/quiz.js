@@ -4,7 +4,7 @@ let contadorPregunta = 0;
 
 async function getQuestions(){
 
-    let response = await fetch("http://localhost:8080/getJSON")
+    let response = await fetch("http://localhost:8080/Preguntas", {headers: {"Content-Type": "application/json"}})
     let contenido = await response.json();
             
         return contenido;

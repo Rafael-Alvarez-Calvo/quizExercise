@@ -67,10 +67,11 @@ function registrarJugador(){
             headers : {
                 'Content-Type' : 'application/json'
             },
-            body : JSON.stringify(newNickName)
+            body : JSON.stringify({...newNickName})
         })
-        .then(() =>{
-
+        .then(res => res.json())
+        .then((puntuacion) =>{
+            console.log(puntuacion);
             setTimeout(() =>{
 
                 let divEmpezar = document.createElement("div");
