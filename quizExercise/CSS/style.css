@@ -229,3 +229,12 @@ button:hover{
 .contenedorHidden{
     visibility: hidden;
 }
+
+.contenedorAvisoFalloRegistro{
+    margin-top: 60px;
+    margin-left: 10px;
+}
+
+#avisoFalloNick{
+    font-size: 11px;
+}
