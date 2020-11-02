@@ -6,28 +6,15 @@ async function getQuestions(){
 
     let response = await fetch("http://localhost:8080/Preguntas", {headers: {"Content-Type": "application/json"}})
     let contenido = await response.json();
-            
+
         return contenido;
+    
+    
+            
  
 }
 
 function pintarPreguntas(content,image){
-
-    // fetch("http://localhost:8080/getJSON")
-    //     .then(response => response.json())
-    //     .then((dataStorage) =>{
-
-    //         resolve(dataStorage)
-    //         let getImages = dataStorage.ref('/').child(image);
-    //         getImages.getDownloadURL().then((url) =>{
-    //         console.log(url);
-    //         let imagen = document.createElement("img");
-    //         imagen.className = "imagenPreguntas"
-    //         imagen.src = url;
-    //         formulario.prepend(imagen);
-    
-    //     })
-    //     })
 
     numero++;
 
@@ -164,22 +151,6 @@ function comprobarResultado(contenido){
             
             }
         
-            // if(e.target.id == botonesResetMenu[0]){
-        
-            //     setTimeout(function(){
-        
-            //         window.location = "quiz.html"
-            //     },1000)
-            // }
-        
-            // if(e.target.id == botonesResetMenu[1]){
-        
-            //     setTimeout(function(){
-        
-            //         window.location = "menu.html"
-            //     },1000)
-            // }
-        
         });
     })
     
@@ -265,6 +236,7 @@ async function Llamada(){
     
         comprobarResultado(contenido);
     }
+
     catch(e) {
         console.log(e);
     }

@@ -1,4 +1,5 @@
 const express = require("express");
+const { check, validationResult } = require('express-validator');
 const bodyParser = require("body-parser");
 const { check, validationResult } = require('express-validator');
 const cors = require("cors");
@@ -57,11 +58,17 @@ server.get("/Preguntas", (req,res) =>{
 * Error     ->    Ha ocurrido un error (hay puntuación más baja que antes)
 * Invalid   ->    El nombre de usuario es invalido
 */
-server.post("/Player",(req, res) => {
+server.post("/Player",[
+    check('Nick')
+        .isLength({min : 3 , max :8})
+        // .isAlphanumeric("en-US")
+    ], (req, res) => {
 
-    let miNick = req.body.Nick;
+    // let miNick = req.body.Nick;
+    // console.log(miNick);
+    const errors = validationResult(req);
 
-    if (miNick && miNick.length > 2)
+    if (errors.isEmpty())
     {
         let player = {"Arte": 0, "Ciencia": 0, "Deportes": 0, ...req.body};
         console.log(player);
@@ -75,17 +82,17 @@ server.post("/Player",(req, res) => {
             if  (data === null || (player.Arte >= data.Arte && player.Ciencia >= data.Ciencia && player.Deportes >= data.Deportes && (player.Arte > data.Arte || player.Ciencia > data.Ciencia || player.Deportes > data.Deportes)))
             {
                 playerRef.set(player);
-                res.send({state: (data == null ? "Created" : "Updated"), ...player})
+                res.send({status: (data == null ? "Created" : "Updated"), ...player})
             }
             else
             {
                 console.log("Error");
-                res.send({state: "Error", ...data});
+                res.send({status: "Error", ...data});
             }
         });
     }
     else {
-        res.send({state: "Invalid"});
+        res.send({status: "Invalid"});
     }
 })
 
