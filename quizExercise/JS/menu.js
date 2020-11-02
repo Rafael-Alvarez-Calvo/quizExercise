@@ -47,7 +47,6 @@ pintarMenu();
 
 function registrarJugador(){
 
-    
 
     document.getElementById("registrarNick").addEventListener("click", () =>{
 

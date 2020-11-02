@@ -1,7 +1,6 @@
 const express = require("express");
 const { check, validationResult } = require('express-validator');
 const bodyParser = require("body-parser");
-const { check, validationResult } = require('express-validator');
 const cors = require("cors");
 const firebase = require("firebase");
 
@@ -58,6 +57,48 @@ server.get("/Preguntas", (req,res) =>{
 * Error     ->    Ha ocurrido un error (hay puntuación más baja que antes)
 * Invalid   ->    El nombre de usuario es invalido
 */
+server.post("/AddQuestion",(req, res) =>{
+
+    if(req.body !== null){
+
+        let miPregunta = req.body.P;
+        let misRespuestas = {R: [req.body.R]};
+        let miRespuestaCorrecta = req.body.RespuestaCorrecta;
+        let miAutor = req.body.Autor;
+        
+
+        let DBRef = database.ref(`/PreguntasQuiz/Pregunta de ${miAutor}`);
+        DBRef.on("value", (dbData) =>{
+
+            let data = dbData.val();
+
+            if(data === null){
+
+                DBRef.set({P : miPregunta, R : misRespuestas , RespuestaCorrecta : miRespuestaCorrecta, Autor : miAutor});
+                console.log(misRespuestas);
+                console.log(miPregunta);
+                console.log(miRespuestaCorrecta);
+                // res.send({status: (data == null ? "Created" : "Error")})
+            }
+            else{
+
+                DBRef.set({P : miPregunta, R : [misRespuestas] , RespuestaCorrecta : miRespuestaCorrecta, Autor : miAutor});
+                // res.send({status: "Error"});
+
+            }
+
+        })
+    }
+    else {
+
+        res.send({status: "Invalid"});
+    }
+
+
+
+
+})
+
 server.post("/Player",[
     check('Nick')
         .isLength({min : 3 , max :8})
