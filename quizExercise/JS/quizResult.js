@@ -68,18 +68,18 @@ function pintarQuizResult(inputsAddAnswers) {
     botonRegistrarPregunta.setAttribute("id", "botonRegistrarPregunta");
     formulario.appendChild(botonRegistrarPregunta);
 
-    document.getElementById("botonRegistrarPregunta").addEventListener("click", () =>{
-
+    document.getElementById("botonRegistrarPregunta").addEventListener("click", (e) =>{
+        e.preventDefault();
         let getQuestion = document.getElementById("addQuestion").value;
-        let getAnswers = document.querySelectorAll("#Respuesta").value;
+        let getAnswers = [...document.querySelectorAll("#Respuesta")];
         let getCorrectAnswer = document.getElementById("respuestaCorrecta").value;
         let getAutor = document.getElementById("autor").value;
 
-        
+        console.log(getAnswers.map(el => el.value));            
         let newQuestion = {
 
             P : getQuestion,
-            R : [getAnswers],
+            R : getAnswers.map(el => el.value),
             RespuestaCorrecta : getCorrectAnswer,
             Autor : getAutor
 

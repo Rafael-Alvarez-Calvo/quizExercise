@@ -1,0 +1,74 @@
+{
+    "PreguntasQuiz" : [
+
+        {
+
+            "Img": "img/Deportes/laBombonera.jpg",
+            "P" : "¿En qué país se encuentra el estadio popularmente conocido como La Bombonera?",
+            "R" : ["Brasil","Colombia","Chile","Argentina"],
+            "RespuestaCorrecta" : "3",
+            "id" : 0,
+            "Cat" : "Deportes"
+
+        },
+        {
+            "Img": "img/Deportes/f1sebastian.jpg",
+            "P" : "¿Quién ganó cuatro mundiales consecutivos de Fórmula 1?",
+            "R" : ["Rubens Barrichello","Jean Pierre Jabouille","Sebastián Vettel","Robert Kubica"],
+            "RespuestaCorrecta" : "2",
+            "id" : 1,
+            "Cat" : "Deportes"
+        },
+        {
+            "Img": "img/Deportes/halterofilia.jpg",
+            "P" : "¿Cómo se llama el deporte en el cual se levantan pesas?",
+            "R" : ["Halterofilia","Hipertrofia","Hipocondria","Hiperlaxitud"],
+            "RespuestaCorrecta" : "0",
+            "id" : 2,
+            "Cat" : "Deportes"
+        },
+        {
+            "Img": "img/Deportes/rugby.jpg",
+            "P" : "¿Cuántos minutos dura un partido de rugby?",
+            "R" : ["100","80","90","110"],
+            "RespuestaCorrecta" : "1",
+            "id" : 3,
+            "Cat" : "Deportes"
+        },
+        {
+            "Img": "img/Deportes/laBombonera.jpg",
+            "P" : "¿En qué país nacieron los dardos?",
+            "R" : ["Dinamarca","Holanda","Italia","Inglaterra"],
+            "RespuestaCorrecta" : "3",
+            "id" : 4,
+            "Cat" : "Deportes"
+        },
+        {
+            "Img": "img/Ciencia/celulas.jpg",
+            "P" : "¿Cómo se llama el proceso por el cual una célula se divide para formar dos células hijas?",
+            "R" : ["Segregación","Mitosis","Meiosis","Mitocondria"],
+            "RespuestaCorrecta" : "1",
+            "id" : 5,
+            "Cat" : "Ciencia"
+        },
+        {
+            "Img": "img/Ciencia/f1sebastian.jpg",
+            "P" : "¿Qué nos permite saber el número atómico de un elemento?",
+            "R" : ["Su ubicación en la tabla periódico","Sus propiedades físicas","La distribución de protones, electrones y neutrones en el átomo","Ninguna de las anteriores"],
+            "RespuestaCorrecta" : "2",
+            "id" : 6,
+            "Cat" : "Ciencia"
+        }
+            
+
+    ],
+            
+    "Jugadores" : [
+        {    
+            "Nick" : "", 
+            "Deportes" : 0,  
+            "Ciencia" : 0,
+            "Arte" : 0
+        }
+    ]
+}

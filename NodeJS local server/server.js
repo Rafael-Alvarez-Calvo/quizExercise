@@ -40,12 +40,13 @@ server.use(express.static("../quizExercise"));
 server.get("/Preguntas", (req,res) =>{
 
     let preguntas = database.ref('PreguntasQuiz/');
-            preguntas.on("value",(snapshot) =>{
+            preguntas.once("value",(dbData) =>{
 
-                contenido = snapshot.val();
+                contenido = dbData.val();
                 
                 res.send(contenido);
-    })
+
+            })
 })
 
 //POST
@@ -58,48 +59,35 @@ server.get("/Preguntas", (req,res) =>{
 * Invalid   ->    El nombre de usuario es invalido
 */
 server.post("/AddQuestion",(req, res) =>{
-
+    // console.log("Received", req.body)
     if(req.body !== null){
 
         let miPregunta = req.body.P;
-        let misRespuestas = {R: [req.body.R]};
+        let misRespuestas = req.body.R;
         let miRespuestaCorrecta = req.body.RespuestaCorrecta;
         let miAutor = req.body.Autor;
         
+        let DBRef = database.ref(`/PreguntasQuiz/`);
+        DBRef.once("value", (dbData) =>{
 
-        let DBRef = database.ref(`/PreguntasQuiz/Pregunta de ${miAutor}`);
-        DBRef.on("value", (dbData) =>{
+        let data = dbData.val().length || 0;
 
-            let data = dbData.val();
-
-            if(data === null){
-
-                DBRef.set({P : miPregunta, R : misRespuestas , RespuestaCorrecta : miRespuestaCorrecta, Autor : miAutor});
-                console.log(misRespuestas);
-                console.log(miPregunta);
-                console.log(miRespuestaCorrecta);
+        DBRef.child(data).set({P : miPregunta, R : misRespuestas , RespuestaCorrecta : miRespuestaCorrecta, Autor : miAutor});
+                
                 // res.send({status: (data == null ? "Created" : "Error")})
-            }
-            else{
-
-                DBRef.set({P : miPregunta, R : [misRespuestas] , RespuestaCorrecta : miRespuestaCorrecta, Autor : miAutor});
-                // res.send({status: "Error"});
-
-            }
-
-        })
+    
+        });
+        res.send({status: "Created"});
     }
     else {
 
         res.send({status: "Invalid"});
     }
 
-
-
-
-})
+});
 
 server.post("/Player",[
+
     check('Nick')
         .isLength({min : 3 , max :8})
         // .isAlphanumeric("en-US")
@@ -135,6 +123,63 @@ server.post("/Player",[
     else {
         res.send({status: "Invalid"});
     }
+})
+
+//PUT:
+
+server.put("/EditQuestion",(req,res) => {
+
+    if(!req.body.id){
+
+        res.send({msg : "error"});
+
+    }else{
+        
+        let preguntas = database.ref(`PreguntasQuiz/${req.body.id}`);
+                preguntas.once("value",(dbData) =>{
+    
+                    let miPregunta = req.body.P;
+                    let misRespuestas = req.body.R;
+                    let miRespuestaCorrecta = req.body.RespuestaCorrecta;
+    
+                    contenido = dbData.val();
+                    
+                    let updatedQuestion = {};
+    
+                    if(miPregunta && miPregunta !== contenido.P)
+                    {
+                        updatedQuestion.P = miPregunta;
+                    }
+    
+                    if (misRespuestas && JSON.stringify(misRespuestas) !== JSON.stringify(contenido.R))
+                    {
+                        updatedQuestion.R = misRespuestas;
+                    }
+    
+                    if (miRespuestaCorrecta && miRespuestaCorrecta !== contenido.RespuestaCorrecta)
+                    {
+                        updatedQuestion.RespuestaCorrecta = miRespuestaCorrecta;
+                    }
+    
+    
+                    if (miPregunta && miPregunta !== contenido.P ||misRespuestas && JSON.stringify(misRespuestas) !== JSON.stringify(contenido.R) || miRespuestaCorrecta && miRespuestaCorrecta !== contenido.RespuestaCorrecta) {
+    
+                        preguntas.update(updatedQuestion);
+                        res.send({msg: "Updated", question: updatedQuestion});
+                        // preguntas.update(raw);
+                    }
+                    else{
+                        res.send({msg: "Not Updated"});
+                    }
+                    
+                    
+        })
+    }
+
+
+
+    // res.send("Me ha llegado")
+
 })
 
 //Instantiate server

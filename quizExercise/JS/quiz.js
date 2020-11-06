@@ -9,14 +9,9 @@ async function getQuestions(){
 
         return contenido;
     
-    
-            
- 
 }
 
 function pintarPreguntas(content,image){
-
-
 
     numero++;
 
@@ -61,20 +56,16 @@ function pintarRespuestas(content){
         
         inputs.tagName = "button"
         inputs.innerText = content[i];
-        inputs.setAttribute("id", content[i]);
+        inputs.setAttribute("id", i);
         inputs.setAttribute("type", "button");
         inputs.setAttribute("name", "respuesta");
-        inputs.setAttribute("value", content[i]);
+        // inputs.setAttribute("value", content[i]);
 
         formulario.appendChild(divRespuestas);
         divRespuestas.appendChild(inputs);
 
     }
 }
-
-// let aciertos = 0;
-
-// localStorage.setItem("Aciertos", aciertos);
 
 function comprobarResultado(contenido){
 
@@ -88,33 +79,32 @@ function comprobarResultado(contenido){
         
                 e.target.className = "button green";
                 
-                // aciertos++;
-        
-                // localStorage.setItem("Aciertos", aciertos);
         
                 setTimeout(function() {
         
                     contadorPregunta++;
-        
+                    console.log(contadorPregunta);
+                    console.log(contenido[contadorPregunta]);
+                    console.log(contenido)
+
                     if(contadorPregunta < contenido.length){
-        
+                        
                         document.querySelector("form").remove();
                         document.querySelector("div").remove();
-                        location.reload = Llamada();
+                        Llamada();
+                        // location.reload = Llamada();
                         
         
                     }else{
-        
+                        
                         document.querySelector("form").remove();
                         document.querySelector("div").remove();
-                        pintarQuizResult();
+                        // window.location = "quizResult.html";
                     }
                             
                 }, 1000);
             
             }
-                
-            // console.log(localStorage);
             
             if(e.target.id !== contenido[contadorPregunta].RespuestaCorrecta){
             
@@ -140,14 +130,14 @@ function comprobarResultado(contenido){
         
                         document.querySelector("form").remove();
                         document.querySelector("div").remove();
-                        location.reload = Llamada()
+                        Llamada()
         
                     }else{
         
                         document.querySelector("form").remove();
                         document.querySelector("div").remove();
                         // pintarQuizResult(inputsAddAnswers);
-                        window.location = "quizResult.html";
+                        // window.location = "quizResult.html";
                     }
             
                 }, 1000);
