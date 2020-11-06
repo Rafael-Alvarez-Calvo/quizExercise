@@ -43,8 +43,10 @@ server.get("/Preguntas", (req,res) =>{
             preguntas.once("value",(dbData) =>{
 
                 contenido = dbData.val();
-                
-                res.send(contenido);
+                if (contenido)
+                    res.send(contenido);
+                else
+                    res.send([]);
 
             })
 })
@@ -70,9 +72,9 @@ server.post("/AddQuestion",(req, res) =>{
         let DBRef = database.ref(`/PreguntasQuiz/`);
         DBRef.once("value", (dbData) =>{
 
-        let data = dbData.val().length || 0;
+        let id = dbData.val() ? dbData.val().length : 0;
 
-        DBRef.child(data).set({P : miPregunta, R : misRespuestas , RespuestaCorrecta : miRespuestaCorrecta, Autor : miAutor});
+        DBRef.child(id).set({P : miPregunta, R : misRespuestas , RespuestaCorrecta : miRespuestaCorrecta, Autor : miAutor, id});
                 
                 // res.send({status: (data == null ? "Created" : "Error")})
     
@@ -128,7 +130,7 @@ server.post("/Player",[
 //PUT:
 
 server.put("/EditQuestion",(req,res) => {
-
+    console.log("req", req.body);
     if(!req.body.id){
 
         res.send({msg : "error"});
