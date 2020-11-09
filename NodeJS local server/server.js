@@ -3,6 +3,7 @@ const { check, validationResult } = require('express-validator');
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const firebase = require("firebase");
+const { contextsKey } = require("express-validator/src/base");
 
 //Initialize Firebase
 function initDataBase(){
@@ -34,13 +35,10 @@ server.use(express.static("../quizExercise"));
 
 //Endpoints
 
-
-
-
 server.get("/Preguntas", (req,res) =>{
 
-    let preguntas = database.ref('PreguntasQuiz/');
-            preguntas.once("value",(dbData) =>{
+    let preguntaGuardada = database.ref('PreguntasQuiz/');
+            preguntaGuardada.once("value",(dbData) =>{
 
                 contenido = dbData.val();
                 if (contenido)
@@ -72,13 +70,14 @@ server.post("/AddQuestion",(req, res) =>{
         let DBRef = database.ref(`/PreguntasQuiz/`);
         DBRef.once("value", (dbData) =>{
 
-        let id = dbData.val() ? dbData.val().length : 0;
+            let id = dbData.val() ? dbData.val().length : 0; //Si hay datos añade id respecto al largo de la data sino hay data el id seria 0
 
-        DBRef.child(id).set({P : miPregunta, R : misRespuestas , RespuestaCorrecta : miRespuestaCorrecta, Autor : miAutor, id});
+            DBRef.child(id).set({P : miPregunta, R : misRespuestas , RespuestaCorrecta : miRespuestaCorrecta, Autor : miAutor, id});
                 
-                // res.send({status: (data == null ? "Created" : "Error")})
+            // res.send({status: (data == null ? "Created" : "Error")})
     
         });
+
         res.send({status: "Created"});
     }
     else {
@@ -130,15 +129,17 @@ server.post("/Player",[
 //PUT:
 
 server.put("/EditQuestion",(req,res) => {
+
     console.log("req", req.body);
+
     if(!req.body.id){
 
         res.send({msg : "error"});
 
     }else{
         
-        let preguntas = database.ref(`PreguntasQuiz/${req.body.id}`);
-                preguntas.once("value",(dbData) =>{
+        let preguntaGuardada = database.ref(`PreguntasQuiz/${req.body.id}`);
+                preguntaGuardada.once("value",(dbData) =>{
     
                     let miPregunta = req.body.P;
                     let misRespuestas = req.body.R;
@@ -166,21 +167,49 @@ server.put("/EditQuestion",(req,res) => {
     
                     if (miPregunta && miPregunta !== contenido.P ||misRespuestas && JSON.stringify(misRespuestas) !== JSON.stringify(contenido.R) || miRespuestaCorrecta && miRespuestaCorrecta !== contenido.RespuestaCorrecta) {
     
-                        preguntas.update(updatedQuestion);
+                        preguntaGuardada.update(updatedQuestion);
                         res.send({msg: "Updated", question: updatedQuestion});
-                        // preguntas.update(raw);
+                        // preguntaGuardada.update(raw);
                     }
                     else{
                         res.send({msg: "Not Updated"});
-                    }
-                    
-                    
+                    }     
         })
     }
+})
 
+// DELETE endpoints
 
+server.delete("/DeleteQuestion", (req,res) =>{
+    
+    let preguntaGuardada = database.ref(`PreguntasQuiz/${req.body.id}`);
+    preguntaGuardada.once("value",(dbData) =>{
 
-    // res.send("Me ha llegado")
+        miPregunta = req.body.id;
+
+        contenido = dbData.val();
+
+        if(miPregunta === contenido.id){
+
+            preguntaGuardada.remove();
+
+            let preguntasActualizadas = database.ref(`PreguntasQuiz/${req.body.id}`);
+            preguntasActualizadas.once("child_changed", (dbData) =>{
+
+                contenidoActualizado = dbData.val();
+
+                // contenidoActualizado--;
+            })
+            contenido
+
+            res.send({msg : "Deleted"});
+
+        }else{
+
+            res.send({msg : "Nothing to delete"});
+        }
+
+    })
 
 })
 
