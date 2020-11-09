@@ -37,8 +37,8 @@ server.use(express.static("../quizExercise"));
 
 server.get("/Preguntas", (req,res) =>{
 
-    let preguntaGuardada = database.ref('PreguntasQuiz/');
-            preguntaGuardada.once("value",(dbData) =>{
+    let preguntas = database.ref('PreguntasQuiz/');
+            preguntas.once("value",(dbData) =>{
 
                 contenido = dbData.val();
                 if (contenido)
@@ -47,6 +47,46 @@ server.get("/Preguntas", (req,res) =>{
                     res.send([]);
 
             })
+})
+
+server.get("/DeportesCat", (req,res) =>{
+
+    let preguntas = database.ref("/PreguntasQuiz");
+    preguntas.orderByChild("Cat").equalTo("Deportes").on("value", (data) =>{
+
+        contenido = data.val();
+        console.log(contenido);
+                if (contenido)
+                    res.send(contenido);
+                else
+                    res.send([]);
+    })
+})
+
+server.get("/CienciaCat", (req,res) =>{
+
+    let preguntas = database.ref("/PreguntasQuiz");
+    preguntas.orderByChild("Cat").equalTo("Ciencia").on("value", (data) =>{
+
+        contenido = data.val();
+                if (contenido)
+                    res.send(contenido);
+                else
+                    res.send([]);
+    })
+})
+
+server.get("/ArteCat", (req,res) =>{
+
+    let preguntas = database.ref("/PreguntasQuiz");
+    preguntas.orderByChild("Cat").equalTo("Arte").on("value", (data) =>{
+
+        contenido = data.val();
+                if (contenido)
+                    res.send(contenido);
+                else
+                    res.send([]);
+    })
 })
 
 //POST
@@ -138,8 +178,8 @@ server.put("/EditQuestion",(req,res) => {
 
     }else{
         
-        let preguntaGuardada = database.ref(`PreguntasQuiz/${req.body.id}`);
-                preguntaGuardada.once("value",(dbData) =>{
+        let preguntas = database.ref(`PreguntasQuiz/${req.body.id}`);
+                preguntas.once("value",(dbData) =>{
     
                     let miPregunta = req.body.P;
                     let misRespuestas = req.body.R;
@@ -167,9 +207,9 @@ server.put("/EditQuestion",(req,res) => {
     
                     if (miPregunta && miPregunta !== contenido.P ||misRespuestas && JSON.stringify(misRespuestas) !== JSON.stringify(contenido.R) || miRespuestaCorrecta && miRespuestaCorrecta !== contenido.RespuestaCorrecta) {
     
-                        preguntaGuardada.update(updatedQuestion);
+                        preguntas.update(updatedQuestion);
                         res.send({msg: "Updated", question: updatedQuestion});
-                        // preguntaGuardada.update(raw);
+                        // preguntas.update(raw);
                     }
                     else{
                         res.send({msg: "Not Updated"});
@@ -182,8 +222,8 @@ server.put("/EditQuestion",(req,res) => {
 
 server.delete("/DeleteQuestion", (req,res) =>{
     
-    let preguntaGuardada = database.ref(`PreguntasQuiz/${req.body.id}`);
-    preguntaGuardada.once("value",(dbData) =>{
+    let preguntas = database.ref(`PreguntasQuiz/${req.body.id}`);
+    preguntas.once("value",(dbData) =>{
 
         miPregunta = req.body.id;
 
@@ -191,7 +231,7 @@ server.delete("/DeleteQuestion", (req,res) =>{
 
         if(miPregunta === contenido.id){
 
-            preguntaGuardada.remove();
+            preguntas.remove();
 
             let preguntasActualizadas = database.ref(`PreguntasQuiz/${req.body.id}`);
             preguntasActualizadas.once("child_changed", (dbData) =>{
