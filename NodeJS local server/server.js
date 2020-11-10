@@ -130,6 +130,7 @@ server.post("/Player",[
 //PUT:
 
 server.put("/EditQuestion",(req,res) => {
+
     console.log("req", req.body);
     if(!req.body.id){
 
@@ -184,5 +185,11 @@ server.put("/EditQuestion",(req,res) => {
 
 })
 
+//DELETE
+
+server.delete("/DeleteQuestion", (req,res) =>{
+
+    
+})
 //Instantiate server
 server.listen(PORT, () => console.log("Listening on port", PORT))

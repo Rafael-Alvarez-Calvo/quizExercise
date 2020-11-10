@@ -1,0 +1,3 @@
+Cajetin de jugadores con partida guardada en pantalla de registro
+boton de volver a atras entre las pantallas
+cajetín de puntos
