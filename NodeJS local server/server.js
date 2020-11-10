@@ -3,6 +3,7 @@ const { check, validationResult } = require('express-validator');
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const firebase = require("firebase");
+const { contextsKey } = require("express-validator/src/base");
 
 //Initialize Firebase
 function initDataBase(){
@@ -34,9 +35,6 @@ server.use(express.static("../quizExercise"));
 
 //Endpoints
 
-
-
-
 server.get("/Preguntas", (req,res) =>{
 
     let preguntas = database.ref('PreguntasQuiz/');
@@ -49,6 +47,46 @@ server.get("/Preguntas", (req,res) =>{
                     res.send([]);
 
             })
+})
+
+server.get("/DeportesCat", (req,res) =>{
+
+    let preguntas = database.ref("/PreguntasQuiz");
+    preguntas.orderByChild("Cat").equalTo("Deportes").on("value", (data) =>{
+
+        contenido = data.val();
+        console.log(contenido);
+                if (contenido)
+                    res.send(contenido);
+                else
+                    res.send([]);
+    })
+})
+
+server.get("/CienciaCat", (req,res) =>{
+
+    let preguntas = database.ref("/PreguntasQuiz");
+    preguntas.orderByChild("Cat").equalTo("Ciencia").on("value", (data) =>{
+
+        contenido = data.val();
+                if (contenido)
+                    res.send(contenido);
+                else
+                    res.send([]);
+    })
+})
+
+server.get("/ArteCat", (req,res) =>{
+
+    let preguntas = database.ref("/PreguntasQuiz");
+    preguntas.orderByChild("Cat").equalTo("Arte").on("value", (data) =>{
+
+        contenido = data.val();
+                if (contenido)
+                    res.send(contenido);
+                else
+                    res.send([]);
+    })
 })
 
 //POST
@@ -72,13 +110,14 @@ server.post("/AddQuestion",(req, res) =>{
         let DBRef = database.ref(`/PreguntasQuiz/`);
         DBRef.once("value", (dbData) =>{
 
-        let id = dbData.val() ? dbData.val().length : 0;
+            let id = dbData.val() ? dbData.val().length : 0; //Si hay datos añade id respecto al largo de la data sino hay data el id seria 0
 
-        DBRef.child(id).set({P : miPregunta, R : misRespuestas , RespuestaCorrecta : miRespuestaCorrecta, Autor : miAutor, id});
+            DBRef.child(id).set({P : miPregunta, R : misRespuestas , RespuestaCorrecta : miRespuestaCorrecta, Autor : miAutor, id});
                 
-                // res.send({status: (data == null ? "Created" : "Error")})
+            // res.send({status: (data == null ? "Created" : "Error")})
     
         });
+
         res.send({status: "Created"});
     }
     else {
@@ -132,6 +171,7 @@ server.post("/Player",[
 server.put("/EditQuestion",(req,res) => {
 
     console.log("req", req.body);
+
     if(!req.body.id){
 
         res.send({msg : "error"});
@@ -173,15 +213,43 @@ server.put("/EditQuestion",(req,res) => {
                     }
                     else{
                         res.send({msg: "Not Updated"});
-                    }
-                    
-                    
+                    }     
         })
     }
+})
 
+// DELETE endpoints
 
+server.delete("/DeleteQuestion", (req,res) =>{
+    
+    let preguntas = database.ref(`PreguntasQuiz/${req.body.id}`);
+    preguntas.once("value",(dbData) =>{
 
-    // res.send("Me ha llegado")
+        miPregunta = req.body.id;
+
+        contenido = dbData.val();
+
+        if(miPregunta === contenido.id){
+
+            preguntas.remove();
+
+            let preguntasActualizadas = database.ref(`PreguntasQuiz/${req.body.id}`);
+            preguntasActualizadas.once("child_changed", (dbData) =>{
+
+                contenidoActualizado = dbData.val();
+
+                // contenidoActualizado--;
+            })
+            contenido
+
+            res.send({msg : "Deleted"});
+
+        }else{
+
+            res.send({msg : "Nothing to delete"});
+        }
+
+    })
 
 })
 
