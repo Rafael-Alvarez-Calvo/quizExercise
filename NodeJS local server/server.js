@@ -47,47 +47,83 @@ server.get("/Preguntas", (req,res) =>{
                     res.send([]);
 
             })
+});
+
+server.get("/getQuestion/:category", (req, res) => {
+
+    let myCategories = req.params.category;
+
+    let DBref = database.ref("/PreguntasQuiz");
+
+    // if(myCategories === "Deportes"){
+
+        DBref.orderByChild("Cat").equalTo(myCategories).once("value", (data) =>{
+            content = data.val();
+            if (content)
+            {
+                // console.log(Object.values(content).filter(el => el));
+                res.send(Object.values(content).filter(el => el)); //el filter va a eliminar del array todo lo que de NaN, Undefined, Null, 0,....
+            }
+            else{
+                res.send({msg : "No existen preguntas de esta categoria"})
+            }
+        })
+    // }
+
+    // if(myCategories === "Ciencia"){
+
+    //     DBref.orderByChild("Cat").equalTo("Deportes").once("value", (data) =>{
+    //         content = data.val().filter(el => el) //el filter va a eliminar del array todo lo que de NaN, Undefined, Null, 0,....
+
+    //         if(content){
+    //             res.send(content);
+    //         }else{
+    //             res.send({msg : "No existen preguntas de esta categoria"})
+    //         }
+    //     })
+    // }
+
 })
 
-server.get("/DeportesCat", (req,res) =>{
+// server.get("/Deportes", (req,res) =>{
 
-    let preguntas = database.ref("/PreguntasQuiz");
-    preguntas.orderByChild("Cat").equalTo("Deportes").on("value", (data) =>{
+//     let preguntas = database.ref("/PreguntasQuiz");
+//     preguntas.orderByChild("Cat").equalTo("Deportes").on("value", (data) =>{
+//         //NaN, Undefined, Null, 0,....
+//         contenido = data.val().filter(el => el);
+//         console.log(contenido);
+//                 if (contenido)
+//                     res.send(contenido);
+//                 else
+//                     res.send([]);
+//     })
+// })
 
-        contenido = data.val();
-        console.log(contenido);
-                if (contenido)
-                    res.send(contenido);
-                else
-                    res.send([]);
-    })
-})
+// server.get("/Ciencia", (req,res) =>{
 
-server.get("/CienciaCat", (req,res) =>{
+//     let preguntas = database.ref("/PreguntasQuiz");
+//     preguntas.orderByChild("Cat").equalTo("Ciencia").on("value", (data) =>{
 
-    let preguntas = database.ref("/PreguntasQuiz");
-    preguntas.orderByChild("Cat").equalTo("Ciencia").on("value", (data) =>{
+//         contenido = data.val();
+//                 if (contenido)
+//                     res.send(contenido);
+//                 else
+//                     res.send([]);
+//     })
+// })
 
-        contenido = data.val();
-                if (contenido)
-                    res.send(contenido);
-                else
-                    res.send([]);
-    })
-})
+// server.get("/Arte", (req,res) =>{
 
-server.get("/ArteCat", (req,res) =>{
+//     let preguntas = database.ref("/PreguntasQuiz");
+//     preguntas.orderByChild("Cat").equalTo("Arte").on("value", (data) =>{
 
-    let preguntas = database.ref("/PreguntasQuiz");
-    preguntas.orderByChild("Cat").equalTo("Arte").on("value", (data) =>{
-
-        contenido = data.val();
-                if (contenido)
-                    res.send(contenido);
-                else
-                    res.send([]);
-    })
-})
+//         contenido = data.val();
+//                 if (contenido)
+//                     res.send(contenido);
+//                 else
+//                     res.send([]);
+//     })
+// })
 
 //POST
 
@@ -99,7 +135,7 @@ server.get("/ArteCat", (req,res) =>{
 * Invalid   ->    El nombre de usuario es invalido
 */
 server.post("/AddQuestion",(req, res) =>{
-    // console.log("Received", req.body)
+
     if(req.body !== null){
 
         let miPregunta = req.body.P;
@@ -112,13 +148,17 @@ server.post("/AddQuestion",(req, res) =>{
 
             let id = dbData.val() ? dbData.val().length : 0; //Si hay datos añade id respecto al largo de la data sino hay data el id seria 0
 
-            DBRef.child(id).set({P : miPregunta, R : misRespuestas , RespuestaCorrecta : miRespuestaCorrecta, Autor : miAutor, id});
+            DBRef.child(id).set({P : miPregunta, R : misRespuestas , RespuestaCorrecta : miRespuestaCorrecta, Autor : miAutor, id})
+            .then(() => {
+
+                res.send({status: "Created"});
+
+            })
                 
             // res.send({status: (data == null ? "Created" : "Error")})
-    
         });
 
-        res.send({status: "Created"});
+        //to Do catch por si se queda pillada la base de datos
     }
     else {
 
@@ -205,11 +245,15 @@ server.put("/EditQuestion",(req,res) => {
                     }
     
     
-                    if (miPregunta && miPregunta !== contenido.P ||misRespuestas && JSON.stringify(misRespuestas) !== JSON.stringify(contenido.R) || miRespuestaCorrecta && miRespuestaCorrecta !== contenido.RespuestaCorrecta) {
+                    if (miPregunta && miPregunta !== contenido.P || misRespuestas && JSON.stringify(misRespuestas) !== JSON.stringify(contenido.R) || miRespuestaCorrecta && miRespuestaCorrecta !== contenido.RespuestaCorrecta){
     
-                        preguntas.update(updatedQuestion);
-                        res.send({msg: "Updated", question: updatedQuestion});
-                        // preguntas.update(raw);
+                        preguntas.update(updatedQuestion)
+
+                        .then(() =>{
+
+                            res.send({msg: "Updated", question: updatedQuestion});
+
+                        })
                     }
                     else{
                         res.send({msg: "Not Updated"});
@@ -253,11 +297,5 @@ server.delete("/DeleteQuestion", (req,res) =>{
 
 })
 
-//DELETE
-
-server.delete("/DeleteQuestion", (req,res) =>{
-
-    
-})
 //Instantiate server
 server.listen(PORT, () => console.log("Listening on port", PORT))

@@ -1,29 +1,13 @@
 let bodySelector = document.querySelector("body");
-let contenedorNickName = document.createElement("div");
-let nickNameBox = document.createElement("input");
-let registrarNick = document.createElement("button");
 let contenedorAvisoFalloRegistro = document.createElement("div");
 
 let numero = 0;
 let contador = 0;
 let contadorPregunta = 0;
-
 let contadorAvisoFalloRegistro = 0;
+let category;
 
-function pintarMenu(){
-
-    contenedorNickName.setAttribute("id","contenedorNickName");
-
-    nickNameBox.setAttribute("id","nickNameBox");
-    nickNameBox.setAttribute("type","text");
-
-    registrarNick.setAttribute("id","registrarNick");
-    registrarNick.setAttribute("type","button");
-    registrarNick.innerText = "Registra tu Nick";
-
-    bodySelector.prepend(contenedorNickName);
-    contenedorNickName.appendChild(nickNameBox);
-    contenedorNickName.appendChild(registrarNick);
+function pintarInicio(){
 
     let contenedorTitulo = document.createElement("div");
     contenedorTitulo.className = "contenedorTitulo";
@@ -45,95 +29,168 @@ function pintarMenu(){
     bodySelector.prepend(contenedorLogo);
     contenedorLogo.appendChild(logo);
 
+    let contenedorLoginRegister = document.createElement("div");
+    contenedorLoginRegister.id = "contenedorLoginRegister";
+
+    let linkToLogin = document.createElement("a");
+    linkToLogin.href = "#";
+    linkToLogin.id = "linkToLogin";
+    linkToLogin.innerText = "LOG IN";
+
+    let barraVSeparadora = document.createElement("p");
+    barraVSeparadora.id = "barraVSeparadora"
+    barraVSeparadora.innerText = "|";
+
+    let linkToRegister = document.createElement("a");
+    linkToRegister.href = "#";
+    linkToRegister.id = "linkToRegister";
+    linkToRegister.innerText = "REGISTER";
+    linkToRegister.addEventListener("click", pintarRegistro);
+
+    bodySelector.appendChild(contenedorLoginRegister);
+    contenedorLoginRegister.appendChild(linkToLogin);
+    contenedorLoginRegister.appendChild(barraVSeparadora);
+    contenedorLoginRegister.appendChild(linkToRegister);
+
 }
 
-pintarMenu();
+pintarInicio();
 
-function registrarJugador(){
+function pintarRegistro(){
+
+    // preventDefault(); //prevenimos cualquier accion por defecto inicial de nuestro enlace
+
+    document.querySelector("#contenedorLoginRegister").remove(); //Borramos el div que contiene a login y a register
+
+    // Creamos formulaio de registro
+    let formRegister = document.createElement("form");
+    formRegister.id = "formRegister";
+
+    // Creamos label e input del nombre de usuario
+    let labelNickNameBox = document.createElement("label");
+    labelNickNameBox.innerText = "Tu nombre de usuario:"
+    let nickNameBox = document.createElement("input");
+    nickNameBox.id = "nickNameBox";
+    nickNameBox.type = "text";
 
 
-    document.getElementById("registrarNick").addEventListener("click", () =>{
+    // Creamos label e input de email de usuario
+    let labelEmailBox = document.createElement("label");
+    labelEmailBox.innerText = "Tu email:";
+    let emailBox = document.createElement("input");
+    emailBox.id = "emailBox";
+    emailBox.type = "email";
 
-        let getValueNick = document.getElementById("nickNameBox").value;
-        
-        let newNickName = {
 
-            Nick : getValueNick
-            
-        };
+    //Creamos label e input de contraseña del usuario
+    let labelPswBox = document.createElement("label");
+    labelPswBox.innerText = "Tu contraseña:";
+    let pswBox = document.createElement("input");
+    pswBox.type = "password";
+    pswBox.id = "pswBox";
 
-        fetch('http://localhost:8080/Player',{
-            method : "POST",
-            headers : {
-                'Content-Type' : 'application/json'
-            },
-            body : JSON.stringify(newNickName)
-        })
-        .then(res => res.json())
-        .then((data) =>{
 
-            let estados = data.status;
-            console.log(data, estados)
-            // console.log(puntuacion);
-            // console.log(data.state);
-            switch(estados){
+    // Creamos el boton de registro
+    let registrarUsuario = document.createElement("button");
+    registrarUsuario.id = "registrarUsuario";
+    registrarUsuario.innerText = "REGISTRARSE";
+    registrarUsuario.addEventListener("click", registrarJugador)
 
-                case "Created":
-                case "Updated":
+    bodySelector.appendChild(formRegister);
+    formRegister.appendChild(labelNickNameBox);
+    formRegister.appendChild(nickNameBox);
+    formRegister.appendChild(labelEmailBox);
+    formRegister.appendChild(emailBox);
+    formRegister.appendChild(labelPswBox);
+    formRegister.appendChild(pswBox);
+    formRegister.appendChild(registrarUsuario);
 
-                    contenedorNickName.className = "contenedorFadeOut";
+}
 
-                    setTimeout(() =>{
-                    contenedorNickName.className = "contenedorHidden";
-                    },550)
+// pintarRegistro();
 
-                    setTimeout(() =>{
-
-                        let divEmpezar = document.createElement("div");
-                        divEmpezar.className = "divEmpezar";
-                        bodySelector.appendChild(divEmpezar);
-            
-                        let entrarMenu = document.createElement("button");
-            
-                        entrarMenu.className = "entrarMenu"
-                        entrarMenu.innerText = "ENTRAR AL MENU";
-            
-                        entrarMenu.setAttribute("id", "entrarMenu");
-            
-                        divEmpezar.appendChild(entrarMenu);
-            
-                        entrarMenu.addEventListener("click",entrarAlMenu);
-            
-                    },600);
-
-                    break;
-
-                case "Error":
-                    setTimeout(() =>{
-
-                        let AvisoNickRegistrado = document.createElement("p");
-                        AvisoNickRegistrado.setAttribute("id", "avisoFalloNick")
-                        AvisoNickRegistrado.innerText = "Ese Nick ya está registrado";
-                        bodySelector.appendChild(AvisoNickRegistrado);
-                        contadorAvisoFalloRegistro ++;
-
-                    },100)
-
-                    break;
-
-                case "Invalid":
-
-                    contenedorNickName.className = "contenedorNickName";
-                    AvisoFalloRegistroNickCaracteres();
-
-                    break;
-            
-            }
-            
-        })
-
-    });
+function registrarJugador(e){
+    e.preventDefault();
+    let getValueNick = document.getElementById("nickNameBox").value;
+    let getValueEmail = document.getElementById("emailBox").value;
+    let getValuePassword = document.getElementById("pswBox").value;
     
+    let newNickName = {
+
+        Nick : getValueNick,
+        Email : getValueEmail,
+        Psw : getValuePassword
+        
+    };
+
+    fetch('http://localhost:8080/Player',{
+        method : "POST",
+        headers : {
+            'Content-Type' : 'application/json'
+        },
+        body : JSON.stringify(newNickName)
+    })
+    .then(res => res.json())
+    .then((data) =>{
+
+        let estados = data.status;
+        console.log(data, estados)
+        // console.log(puntuacion);
+        // console.log(data.state);
+        switch(estados){
+
+            case "Created":
+            case "Updated":
+
+                formRegister.className = "contenedorFadeOut";
+
+                setTimeout(() =>{
+                formRegister.className = "contenedorHidden";
+                },550)
+
+                setTimeout(() =>{
+
+                    let divEmpezar = document.createElement("div");
+                    divEmpezar.className = "divEmpezar";
+                    bodySelector.appendChild(divEmpezar);
+        
+                    let entrarMenu = document.createElement("button");
+        
+                    entrarMenu.className = "entrarMenu"
+                    entrarMenu.innerText = "ENTRAR AL MENU";
+        
+                    entrarMenu.setAttribute("id", "entrarMenu");
+        
+                    divEmpezar.appendChild(entrarMenu);
+        
+                    entrarMenu.addEventListener("click",entrarAlMenu);
+        
+                },600);
+
+                break;
+
+            case "Error":
+                setTimeout(() =>{
+
+                    let AvisoNickRegistrado = document.createElement("p");
+                    AvisoNickRegistrado.setAttribute("id", "avisoFalloNick")
+                    AvisoNickRegistrado.innerText = "Ese Nick ya está registrado";
+                    bodySelector.appendChild(AvisoNickRegistrado);
+                    contadorAvisoFalloRegistro ++;
+
+                },100)
+
+                break;
+
+            case "Invalid":
+
+                formRegister.className = "formRegister";
+                AvisoFalloRegistroNickCaracteres();
+
+                break;
+        
+        }
+    })
 }
 
 function AvisoFalloRegistroNickCaracteres(){
@@ -161,7 +218,7 @@ function AvisoFalloRegistroNickCaracteres(){
 }
 
 
-registrarJugador();
+// registrarJugador();
 
 async function entrarAlMenu(){
 
@@ -181,17 +238,26 @@ async function entrarAlMenu(){
         let botonDeportes = document.createElement("button");
         botonDeportes.innerText = "DEPORTES";
         botonDeportes.setAttribute("id", "Deportes");
-        botonDeportes.addEventListener("click",SportQuestionsCall);
+        botonDeportes.addEventListener("click",()  => {
+            category = "Deportes";
+            QuestionsCall()
+        });
 
         let botonCiencia = document.createElement("button");
         botonCiencia.innerText = "CIENCIA";
         botonCiencia.setAttribute("id", "Ciencia");
-        botonCiencia.addEventListener("click", ScienceQuestionsCall)
+        botonCiencia.addEventListener("click", ()  => {
+            category = "Ciencia";
+            QuestionsCall()
+        })
 
         let botonArte = document.createElement("button");
         botonArte.innerText = "ARTE";
         botonArte.setAttribute("id", "Arte");
-        botonArte.addEventListener("click",ArtQuestionsCall);
+        botonArte.addEventListener("click",()  => {
+            category = "Arte";
+            QuestionsCall()
+        });
 
         bodySelector.appendChild(contenedorCategorias);
         contenedorCategorias.appendChild(categoriasTitulo);
@@ -411,7 +477,7 @@ function botonAñadirPreguntaForm(e){
         RespuestaCorrecta : correctAnswer,
         Autor : getAutor
     }
-    console.log(newQuestion);
+
     fetch('http://localhost:8080/AddQuestion',{
         method : "POST",
         headers : {
@@ -422,12 +488,15 @@ function botonAñadirPreguntaForm(e){
 
     .then(res => res.json())
 
-    .then((contenido) =>{
+    .then((data) =>{
 
-        actualizarListado(contenido);
+        if(data.status == "Created")
+
+            actualizarListado();
+
     })
-
 }
+
 function botonModPreguntaForm(e){
 
     e.preventDefault();
@@ -465,9 +534,12 @@ function botonModPreguntaForm(e){
 
     .then(res => res.json())
 
-    
+    .then((data) =>{
 
-
+        if(data.status == "Created")
+            actualizarListado();
+                 
+    })
 }
 
 async function botonModificarPreguntaListado(e){
@@ -561,6 +633,7 @@ async function actualizarListado(){  //Preguntar porque no me actualiza con la p
 
     .then((contenido) =>{
 
+        console.log(contenido);
         contenido.map(data =>{
 
             PintarPreguntasEditables(data);//Actualizamos la pantalla con las prguntas nuevas preguntas nuevas
@@ -568,29 +641,16 @@ async function actualizarListado(){  //Preguntar porque no me actualiza con la p
     })
 }
 
-async function getSportQuestions(){
+async function getQuestions(category){
+    console.log("Categoria", category)
+    if (category){
 
-    let response = await fetch("http://localhost:8080/DeportesCat", {headers: {"Content-Type": "application/json"}})
-    let contenido = await response.json();
+        let res = await fetch(`http://localhost:8080/getQuestion/${category}`)
+        let content = await res.json();
 
-        return contenido;
-    
-}
-async function getScienceQuestions(){
-
-    let response = await fetch("http://localhost:8080/CienciaCat", {headers: {"Content-Type": "application/json"}})
-    let contenido = await response.json();
-
-        return contenido;
-    
-}
-async function getArtQuestions(){
-
-    let response = await fetch("http://localhost:8080/ArteCat", {headers: {"Content-Type": "application/json"}})
-    let contenido = await response.json();
-
-        return contenido;
-    
+        return content;
+    }
+    return null;
 }
 
 function pintarPreguntas(content,image){
@@ -674,11 +734,8 @@ function comprobarResultado(contenido){
                         document.querySelector("form").remove();
                         document.querySelector("button").remove;
                         // QuestionCall();
-                        SportQuestionsCall();
+                        QuestionsCall(category);
                         
-                        
-                        
-        
                     }else{
                         
                         document.querySelector("form").remove();
@@ -713,7 +770,7 @@ function comprobarResultado(contenido){
         
                         document.querySelector("form").remove();
                         document.querySelector("button").remove;
-                        QuestionCall();
+                        QuestionsCall();
                         
         
                     }else{
@@ -733,13 +790,7 @@ function comprobarResultado(contenido){
     
 }
 
-async function SportQuestionsCall(){
-
-    let selectorBackMenu = document.querySelector("#botonBackMenu");
-
-    if(selectorBackMenu){
-        selectorBackMenu.remove();
-    }
+async function QuestionsCall(){
 
     //removemos los div de categorias y de añadir preguntas
     document.querySelectorAll("div").forEach(node =>{
@@ -747,12 +798,12 @@ async function SportQuestionsCall(){
     })
 
     //Realizamos llamada asincrona de la funcion que comunica cvon el server para proporcionarnos las preguntas de deportes
-    let SportQuestions = await getSportQuestions(contadorPregunta);
-    
-    pintarPreguntas(SportQuestions[contadorPregunta].P, SportQuestions[contadorPregunta].Img);
-    pintarRespuestas(SportQuestions[contadorPregunta].R);
+    let Questions = await getQuestions(category);
 
-    comprobarResultado(SportQuestions);
+    pintarPreguntas(Questions[contadorPregunta].P, Questions[contadorPregunta].Img);
+    pintarRespuestas(Questions[contadorPregunta].R);
+
+    comprobarResultado(Questions);
 
     //Creamos y damos funcionalidad al boton de volver atras
     let botonBackMenu = document.createElement("button");
@@ -776,114 +827,5 @@ async function SportQuestionsCall(){
             entrarAlMenu();
 
         },500)
-
-
-    })
-}
-
-async function ScienceQuestionsCall(){
-
-    //removemos los div de categorias y de añadir preguntas
-    document.querySelectorAll("div").forEach(node =>{
-        node.remove();  
-    })
-
-    //Realizamos llamada asincrona de la funcion que comunica cvon el server para proporcionarnos las preguntas de deportes
-    let ScienceQuestions = await getScienceQuestions(contadorPregunta);
-    
-    pintarPreguntas(ScienceQuestions[contadorPregunta].P, ScienceQuestions[contadorPregunta].Img);
-    pintarRespuestas(ScienceQuestions[contadorPregunta].R);
-
-    comprobarResultado(ScienceQuestions);
-
-    //Creamos y damos funcionalidad al boton de volver atras
-    let botonBackMenu = document.createElement("button");
-    botonBackMenu.innerText = "MENÚ";
-    botonBackMenu.id = "botonBackMenu";
-    bodySelector.appendChild(botonBackMenu)
-
-    botonBackMenu.addEventListener("click", () =>{
-
-        setTimeout(() =>{
-
-            document.querySelectorAll("div").forEach(node =>{
-                node.remove();  
-            })
-
-            document.querySelector("form").remove();
-            document.querySelector("#botonBackMenu").remove();
-
-            numero = 0;
-    
-            entrarAlMenu();
-
-        },500)
-    })
-}
-
-async function ArtQuestionsCall(){
-
-    //removemos los div de categorias y de añadir preguntas
-    document.querySelectorAll("div").forEach(node =>{
-        node.remove();  
-    })
-
-    //Realizamos llamada asincrona de la funcion que comunica cvon el server para proporcionarnos las preguntas de deportes
-    let ArtQuestions = await getArtQuestions(contadorPregunta);
-    
-    pintarPreguntas(ArtQuestions[contadorPregunta].P, ArtQuestions[contadorPregunta].Img);
-    pintarRespuestas(ArtQuestions[contadorPregunta].R);
-
-    comprobarResultado(ArtQuestions);
-
-    //Creamos y damos funcionalidad al boton de volver atras
-    let botonBackMenu = document.createElement("button");
-    botonBackMenu.innerText = "MENÚ";
-    botonBackMenu.id = "botonBackMenu";
-    bodySelector.appendChild(botonBackMenu)
-
-    botonBackMenu.addEventListener("click", () =>{
-
-        setTimeout(() =>{
-
-            document.querySelectorAll("div").forEach(node =>{
-                node.remove();  
-            })
-
-            document.querySelector("form").remove();
-            document.querySelector("#botonBackMenu").remove();
-
-            numero = 0;
-    
-            entrarAlMenu();
-
-        },500)
-    })
-}
-
-function QuestionCall(){
-
-    fetch("http://localhost:8080/Preguntas")
-
-    .then(res => res.json())
-    .then((data) =>{
-
-        let categoria = data.Cat;
-        console.log(categoria);
-        switch(categoria){
-            
-            case "Deportes" :
-                SportQuestionsCall();
-                break;
-            
-            case "Ciencia" :
-                ScienceQuestionsCall();
-                break;
-            
-            case "Arte" :
-                ArtQuestionsCall();
-                break;
-        }
-
     })
 }

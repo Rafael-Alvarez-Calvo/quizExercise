@@ -150,6 +150,18 @@ button:hover{
     
 }
 
+#contenedorLoginRegister{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 200px;
+}
+
+a{
+    text-decoration: none;
+    
+}
+
 .divEmpezar{
     display: flex;
     flex-direction: column;
@@ -157,6 +169,7 @@ button:hover{
     transform: translate(0px, -10px);
     position: relative;
 }
+
 
 .start{
 
@@ -242,3 +255,4 @@ button:hover{
 #avisoFalloNick{
     font-size: 11px;
 }
+
