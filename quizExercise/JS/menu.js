@@ -37,28 +37,75 @@ function pintarInicio(){
     linkToLogin.id = "linkToLogin";
     linkToLogin.innerText = "LOG IN";
 
-    let barraVSeparadora = document.createElement("p");
-    barraVSeparadora.id = "barraVSeparadora"
-    barraVSeparadora.innerText = "|";
+    let iconLogIn = document.createElement("i");
+    iconLogIn.className = "fa fa-sign-in";
+    iconLogIn.id = "iconLogIn";
+    iconLogIn.setAttribute("aria-hidden", "true");
+    
 
     let linkToRegister = document.createElement("a");
     linkToRegister.href = "#";
     linkToRegister.id = "linkToRegister";
-    linkToRegister.innerText = "REGISTER";
+    linkToRegister.innerText = "SIGN IN";
     linkToRegister.addEventListener("click", pintarRegistro);
+
+    let iconRegister = document.createElement("i");
+    iconRegister.className = "fa fa-address-book";
+    iconRegister.id ="iconRegister";
+    iconRegister.setAttribute("aria-hidden", "true");
 
     bodySelector.appendChild(contenedorLoginRegister);
     contenedorLoginRegister.appendChild(linkToLogin);
-    contenedorLoginRegister.appendChild(barraVSeparadora);
     contenedorLoginRegister.appendChild(linkToRegister);
+    linkToRegister.prepend(iconRegister);
+    linkToLogin.prepend(iconLogIn);
 
 }
 
 pintarInicio();
 
-function pintarRegistro(){
+function pintarLogIn(e){
 
-    // preventDefault(); //prevenimos cualquier accion por defecto inicial de nuestro enlace
+    e.preventDefault();
+
+    document.querySelector("#contenedorLoginRegister").remove();
+
+    let contenedorInputsLogIn = document.createElement("div");
+    contenedorInputsLogIn.id = "contenedorInputsLogIn";
+
+    let inputCorreo = document.createElement("input");
+    inputCorreo.id = "inputCorreo";
+    inputCorreo.placeholder = "Nombre de usuario o correo electrónico";
+
+    let inputPswBox = document.createElement("input");
+    inputPswBox.type = "password";
+    inputPswBox.id = "inputPswBox";
+    inputPswBox.placeholder = "*********";
+
+    let botonEntrar = document.createElement("button");
+    botonEntrar.innerText = "ENTRAR";
+    botonEntrar.id = "botonEntrar";
+
+    bodySelector.appendChild(contenedorInputsLogIn);
+    contenedorInputsLogIn.append(inputCorreo,inputPswBox,botonEntrar);
+
+    botonEntrar.addEventListener("click",)
+
+
+}
+
+function comprobarCredenciales(){
+
+    document.querySelector("#contenedorInputsLogIn").remove();
+    document.querySelector(".contenedorTitulo").remove();
+    document.querySelector(".contenedorLogo").remove();
+
+    fetch('http://localhost:8080/AddQuestion')
+}
+
+function pintarRegistro(e){
+
+    e.preventDefault(); //prevenimos cualquier accion por defecto inicial de nuestro enlace
 
     document.querySelector("#contenedorLoginRegister").remove(); //Borramos el div que contiene a login y a register
 

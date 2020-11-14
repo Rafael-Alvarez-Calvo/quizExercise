@@ -2,8 +2,13 @@
     box-sizing: border-box;
 } */
 
+@keyframes sink {
+    0% { transform: translateY(0px);  }
+    100% { transform: translateY(10px);  }
+}
+
 body {
-    background: #F8D189;
+    background: #D6F6F2;
     font-family: 'Roboto', sans-serif;
     
     padding: 30px;
@@ -152,14 +157,71 @@ button:hover{
 
 #contenedorLoginRegister{
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 200px;
+    margin-top: 120px;
 }
 
 a{
+
+    width: 120px;
+    text-align: center;
+    color: white;
+    background-color: #8EACB7;
+    padding: 10px 20px 10px 20px;
+    border: 2px solid white;
+    border-radius: 5px;
+    box-shadow: 2px 2px 1px 1px  #556970;
     text-decoration: none;
+    transform: translateY(0px);
+    transition: transform 0.15s ease-in-out, color 0.20s ease-in-out, background-color 0.20s ease-in-out, border-radius 0.20s ease-in-out;
+     
+}
+
+a:hover{
     
+    transition: transform 0.15s ease-in-out, color 0.20s ease-in-out, background-color 0.20s ease-in-out, border-radius 0.20s ease-in-out;
+    width: 120px;
+    text-align: center;
+    color: #8EACB7;
+    background-color: white;
+    padding: 10px 20px 10px 20px;
+    border: 2px solid #8EACB7;
+    border-radius: 8px;
+    box-shadow: 2px 2px 2px 1px  #556970;
+    text-decoration: none;
+    transform: translateY(5px);
+}
+
+a:active{
+
+    width: 120px;
+    text-align: center;
+    color: white;
+    background-color: #8EACB7;
+    padding: 10px 20px 10px 20px;
+    border: 2px solid white;
+    border-radius: 8px;
+    box-shadow: 2px 2px 1px 1px  #556970;
+    text-decoration: none;
+
+}
+
+#linkToLogin{
+    margin-bottom: 10px;
+}
+
+#linkToRegister{
+    margin-top: 10px;
+}
+
+#iconRegister{
+    margin-right: 10px;
+}
+
+#iconLogIn{
+    margin-right: 10px;
 }
 
 .divEmpezar{

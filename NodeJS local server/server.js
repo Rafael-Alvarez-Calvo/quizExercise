@@ -35,6 +35,11 @@ server.use(express.static("../quizExercise"));
 
 //Endpoints
 
+server.get("/CheckCredentials", (req, res) =>{
+
+    let emailRef = database.ref('Jugadores/').child()
+})
+
 server.get("/Preguntas", (req,res) =>{
 
     let preguntas = database.ref('PreguntasQuiz/');
@@ -68,62 +73,7 @@ server.get("/getQuestion/:category", (req, res) => {
                 res.send({msg : "No existen preguntas de esta categoria"})
             }
         })
-    // }
-
-    // if(myCategories === "Ciencia"){
-
-    //     DBref.orderByChild("Cat").equalTo("Deportes").once("value", (data) =>{
-    //         content = data.val().filter(el => el) //el filter va a eliminar del array todo lo que de NaN, Undefined, Null, 0,....
-
-    //         if(content){
-    //             res.send(content);
-    //         }else{
-    //             res.send({msg : "No existen preguntas de esta categoria"})
-    //         }
-    //     })
-    // }
-
 })
-
-// server.get("/Deportes", (req,res) =>{
-
-//     let preguntas = database.ref("/PreguntasQuiz");
-//     preguntas.orderByChild("Cat").equalTo("Deportes").on("value", (data) =>{
-//         //NaN, Undefined, Null, 0,....
-//         contenido = data.val().filter(el => el);
-//         console.log(contenido);
-//                 if (contenido)
-//                     res.send(contenido);
-//                 else
-//                     res.send([]);
-//     })
-// })
-
-// server.get("/Ciencia", (req,res) =>{
-
-//     let preguntas = database.ref("/PreguntasQuiz");
-//     preguntas.orderByChild("Cat").equalTo("Ciencia").on("value", (data) =>{
-
-//         contenido = data.val();
-//                 if (contenido)
-//                     res.send(contenido);
-//                 else
-//                     res.send([]);
-//     })
-// })
-
-// server.get("/Arte", (req,res) =>{
-
-//     let preguntas = database.ref("/PreguntasQuiz");
-//     preguntas.orderByChild("Cat").equalTo("Arte").on("value", (data) =>{
-
-//         contenido = data.val();
-//                 if (contenido)
-//                     res.send(contenido);
-//                 else
-//                     res.send([]);
-//     })
-// })
 
 //POST
 
