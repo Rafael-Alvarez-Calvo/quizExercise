@@ -9,21 +9,11 @@ let category;
 
 function pintarInicio(){
 
-    let contenedorTitulo = document.createElement("div");
-    contenedorTitulo.className = "contenedorTitulo";
-
-    let titulo = document.createElement("h1");
-    titulo.innerText = "QUIZZER";
-    contenedorTitulo.className = "titulo";
-
-    bodySelector.prepend(contenedorTitulo)
-    contenedorTitulo.appendChild(titulo);
-
     let contenedorLogo = document.createElement("div");
     contenedorLogo.className = "contenedorLogo";
 
     let logo = document.createElement("img");
-    logo.src = "img/Logo.png";
+    logo.src = "img/Logo-Quizz-pro.png";
     logo.className = "logo";
 
     bodySelector.prepend(contenedorLogo);
@@ -36,6 +26,7 @@ function pintarInicio(){
     linkToLogin.href = "#";
     linkToLogin.id = "linkToLogin";
     linkToLogin.innerText = "LOG IN";
+    linkToLogin.addEventListener("click", pintarLogIn);
 
     let iconLogIn = document.createElement("i");
     iconLogIn.className = "fa fa-sign-in";
@@ -46,7 +37,7 @@ function pintarInicio(){
     let linkToRegister = document.createElement("a");
     linkToRegister.href = "#";
     linkToRegister.id = "linkToRegister";
-    linkToRegister.innerText = "SIGN IN";
+    linkToRegister.innerText = "SIGN UP";
     linkToRegister.addEventListener("click", pintarRegistro);
 
     let iconRegister = document.createElement("i");
@@ -68,99 +59,177 @@ function pintarLogIn(e){
 
     e.preventDefault();
 
-    document.querySelector("#contenedorLoginRegister").remove();
+    let selectorFormRegister = document.querySelector("form");
+    let selectorContenedorLogInRegister = document.querySelector("#contenedorLoginRegister");
+
+    if(selectorFormRegister)
+        selectorFormRegister.remove();
+
+    if(selectorContenedorLogInRegister)
+        selectorContenedorLogInRegister.remove();
 
     let contenedorInputsLogIn = document.createElement("div");
     contenedorInputsLogIn.id = "contenedorInputsLogIn";
 
-    let inputCorreo = document.createElement("input");
-    inputCorreo.id = "inputCorreo";
-    inputCorreo.placeholder = "Nombre de usuario o correo electrónico";
+    let inputEmail = document.createElement("input");
+    inputEmail.id = "inputEmail";
+    inputEmail.placeholder = "Nombre de usuario o correo electrónico";
 
     let inputPswBox = document.createElement("input");
     inputPswBox.type = "password";
     inputPswBox.id = "inputPswBox";
     inputPswBox.placeholder = "*********";
 
-    let botonEntrar = document.createElement("button");
-    botonEntrar.innerText = "ENTRAR";
-    botonEntrar.id = "botonEntrar";
+    let btnLogIn = document.createElement("button");
+    btnLogIn.innerText = "Log In";
+    btnLogIn.id = "btnLogIn";
 
     bodySelector.appendChild(contenedorInputsLogIn);
-    contenedorInputsLogIn.append(inputCorreo,inputPswBox,botonEntrar);
+    contenedorInputsLogIn.append(inputEmail,inputPswBox,btnLogIn);
 
-    botonEntrar.addEventListener("click",)
-
+    btnLogIn.addEventListener("click", comprobarCredenciales);
 
 }
 
 function comprobarCredenciales(){
 
-    document.querySelector("#contenedorInputsLogIn").remove();
-    document.querySelector(".contenedorTitulo").remove();
-    document.querySelector(".contenedorLogo").remove();
+    // document.querySelector(".contenedorLogo").remove();
 
-    fetch('http://localhost:8080/AddQuestion')
+    let getValueInputEmail = document.getElementById("inputEmail").value;
+    let getValueInputPsw = document.getElementById("inputPswBox").value;
+
+    let credentials = {
+        Email : getValueInputEmail,
+        Psw : getValueInputPsw
+    }
+
+    fetch('http://localhost:8080/CheckCredentials',{
+        method : "POST",
+        headers : {
+            'Content-Type' : 'application/json'
+        },
+        body : JSON.stringify(credentials)
+    })
+
+    .then(res => res.json())
+    .then((data) =>{
+
+        let responses = data.msg;
+
+        switch(responses){
+
+            case "validNick":
+            case "validEmail":
+            case "validPsw":
+
+                setTimeout(() =>{
+
+                    document.querySelector("#contenedorInputsLogIn").remove();
+
+                },500);
+
+                setTimeout(() =>{
+
+                    let welcomeMsg = document.createElement("h1");
+                    welcomeMsg.innerText = `Bienvenido ${data.Nick}`;
+                    welcomeMsg.id = "welcomeMsg";
+                    bodySelector.appendChild(welcomeMsg);
+
+                    setTimeout(() =>{
+
+                        document.getElementById("welcomeMsg").remove();
+                        entrarAlMenu();
+                    },2000)
+
+                },600)
+
+                break;
+
+            case "invalidNick":
+            case "invalidEmail":
+            case "invalidPsw":
+
+                console.log("El email no existe");
+                break;
+
+        }
+    })
 }
 
 function pintarRegistro(e){
 
     e.preventDefault(); //prevenimos cualquier accion por defecto inicial de nuestro enlace
+    
+    let selectorContenedorLoginRegister = document.querySelector("#contenedorLoginRegister").style;
+    selectorContenedorLoginRegister.transition = "opacity .4s";
+    selectorContenedorLoginRegister.opacity = 0;
 
-    document.querySelector("#contenedorLoginRegister").remove(); //Borramos el div que contiene a login y a register
+    setTimeout(() =>{
 
-    // Creamos formulaio de registro
-    let formRegister = document.createElement("form");
-    formRegister.id = "formRegister";
+        document.querySelector("#contenedorLoginRegister").remove(); //Borramos el div que contiene a login y a register
 
-    // Creamos label e input del nombre de usuario
-    let labelNickNameBox = document.createElement("label");
-    labelNickNameBox.innerText = "Tu nombre de usuario:"
-    let nickNameBox = document.createElement("input");
-    nickNameBox.id = "nickNameBox";
-    nickNameBox.type = "text";
+        let selectorLogo = document.querySelector(".contenedorLogo").style;
+        selectorLogo.transform = "translateY(20px)";
+
+        let inputs = ["Nombre de usuario","Correo electrónico","Contraseña"];
+
+        // Creamos formulaio de registro
+        let formRegister = document.createElement("form");
+        formRegister.id = "formRegister";
+        bodySelector.appendChild(formRegister);
+
+        inputs.map((i) =>{ //Creamos inputs
+
+            inputsFormRegister = document.createElement("input");
+            inputsFormRegister.id = i.replace(/ /g, ""); //Seleccionamos todos los espacios entre palabras y los borramos
+            inputsFormRegister.placeholder = `${i} *`;
+            inputsFormRegister.className = "inputsFormRegister";
+            inputsFormRegister.required = true;
+            formRegister.appendChild(inputsFormRegister);
+
+        })
+
+        let selectorInputsFormRegister = document.querySelectorAll("input");
+        selectorInputsFormRegister.forEach(() =>{
+
+            selectorInputsFormRegister[0].type = "text";
+            selectorInputsFormRegister[1].type = "email";
+            selectorInputsFormRegister[2].type = "password";
 
 
-    // Creamos label e input de email de usuario
-    let labelEmailBox = document.createElement("label");
-    labelEmailBox.innerText = "Tu email:";
-    let emailBox = document.createElement("input");
-    emailBox.id = "emailBox";
-    emailBox.type = "email";
+        })
 
+        // Creamos el boton de registro
+        let registrarUsuario = document.createElement("button");
+        registrarUsuario.id = "registrarUsuario";
+        registrarUsuario.innerText = "SIGN UP";
+        registrarUsuario.addEventListener("click", registrarJugador)
 
-    //Creamos label e input de contraseña del usuario
-    let labelPswBox = document.createElement("label");
-    labelPswBox.innerText = "Tu contraseña:";
-    let pswBox = document.createElement("input");
-    pswBox.type = "password";
-    pswBox.id = "pswBox";
+        let alreadyHaveAccount = document.createElement("p");
+        alreadyHaveAccount.innerText = "Do you already have an account?, please ";
 
+        let linkToLogInRegisterForm = document.createElement("a");
+        linkToLogInRegisterForm.id = "linkToLogInRegisterForm";
+        linkToLogInRegisterForm.href = "#";
+        linkToLogInRegisterForm.innerText = "Log In";
+        linkToLogInRegisterForm.addEventListener("click",pintarLogIn);
 
-    // Creamos el boton de registro
-    let registrarUsuario = document.createElement("button");
-    registrarUsuario.id = "registrarUsuario";
-    registrarUsuario.innerText = "REGISTRARSE";
-    registrarUsuario.addEventListener("click", registrarJugador)
+        formRegister.append(registrarUsuario,alreadyHaveAccount);
+        alreadyHaveAccount.appendChild(linkToLogInRegisterForm);
 
-    bodySelector.appendChild(formRegister);
-    formRegister.appendChild(labelNickNameBox);
-    formRegister.appendChild(nickNameBox);
-    formRegister.appendChild(labelEmailBox);
-    formRegister.appendChild(emailBox);
-    formRegister.appendChild(labelPswBox);
-    formRegister.appendChild(pswBox);
-    formRegister.appendChild(registrarUsuario);
+    },500)
 
 }
 
 // pintarRegistro();
 
 function registrarJugador(e){
+
     e.preventDefault();
-    let getValueNick = document.getElementById("nickNameBox").value;
-    let getValueEmail = document.getElementById("emailBox").value;
-    let getValuePassword = document.getElementById("pswBox").value;
+    
+    let getValueNick = document.getElementById("Nombredeusuario").value;
+    let getValueEmail = document.getElementById("Correoelectrónico").value;
+    let getValuePassword = document.getElementById("Contraseña").value;
     
     let newNickName = {
 
@@ -272,9 +341,9 @@ async function entrarAlMenu(){
     setTimeout(() =>{
 
         // window.location = "quiz.html";
-        document.querySelectorAll("div").forEach(node =>{
-            node.remove();  
-        })
+        // document.querySelectorAll("div").forEach(node =>{
+        //     node.remove();  
+        // })
 
         let categoriasTitulo = document.createElement("h1");
         categoriasTitulo.innerText = "Elige categoria";

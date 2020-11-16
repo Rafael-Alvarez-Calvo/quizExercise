@@ -35,10 +35,7 @@ server.use(express.static("../quizExercise"));
 
 //Endpoints
 
-server.get("/CheckCredentials", (req, res) =>{
 
-    let emailRef = database.ref('Jugadores/').child()
-})
 
 server.get("/Preguntas", (req,res) =>{
 
@@ -117,6 +114,8 @@ server.post("/AddQuestion",(req, res) =>{
 
 });
 
+
+
 server.post("/Player",[
 
     check('Nick')
@@ -133,7 +132,7 @@ server.post("/Player",[
         let player = {"Arte": 0, "Ciencia": 0, "Deportes": 0, ...req.body};
         console.log(player);
 
-        let playerRef = firebase.database().ref(`/Jugadores/${player.Nick}`);
+        let playerRef = firebase.database().ref(`/Jugadores/${player.Nick}||${player.Email}`);
         playerRef.once("value", (dbData) => {
 
             let data = dbData.val();
@@ -154,6 +153,49 @@ server.post("/Player",[
     else {
         res.send({status: "Invalid"});
     }
+})
+
+server.post("/CheckCredentials", (req, res) =>{
+
+    let myEmail = req.body.Email;
+    let myPsw = req.body.Psw;
+
+    let userRef = database.ref("Jugadores/");
+
+    let emailRef = userRef.child("/Email/");
+    let NickRef = userRef.child("/Nick/");
+    let PswRef = userRef.child("/Psw/");
+
+    NickRef.on("value", (dbData) =>{
+
+        dbNick = dbData.val();
+
+        if(myEmail === dbNick)
+            res.send({msg : "validNick", Nick});
+        else
+            res.send({msg: "invalidNick"});
+    })
+
+    emailRef.on("value", (dbData) =>{
+
+        dbEmail = dbData.val();
+
+        if(myEmail === dbEmail)
+            res.send({msg : "validEmail", Nick});
+        else
+            res.send({msg: "invalidEmail"});
+    })
+
+    
+    PswRef.on("value", (dbData) =>{
+
+        dbPsw = dbData.val();
+
+        if(myPsw === dbPsw)
+            res.send({msg : "validPsw"});
+        else
+            res.send({msg: "invalidPsw"});
+    })
 })
 
 //PUT:
