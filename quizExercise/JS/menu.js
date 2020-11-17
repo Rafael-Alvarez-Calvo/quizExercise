@@ -103,7 +103,7 @@ function comprobarCredenciales(){
         Psw : getValueInputPsw
     }
 
-    fetch('http://localhost:8080/CheckCredentials',{
+    fetch('http://localhost:8080/LogIn',{
         method : "POST",
         headers : {
             'Content-Type' : 'application/json'
@@ -239,7 +239,7 @@ function registrarJugador(e){
         
     };
 
-    fetch('http://localhost:8080/Player',{
+    fetch('http://localhost:8080/SignUp',{
         method : "POST",
         headers : {
             'Content-Type' : 'application/json'

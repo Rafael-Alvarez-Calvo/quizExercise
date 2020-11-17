@@ -1,9 +1,12 @@
 const express = require("express");
-const { check, validationResult } = require('express-validator');
+const base64 = require("base-64");
+// const { check, validationResult } = require('express-validator');
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const firebase = require("firebase");
-const { contextsKey } = require("express-validator/src/base");
+const cookieParser = require("cookie-parser");
+const crypto = require("crypto"); //viene por defecto conNodeJs
+// const { contextsKey } = require("express-validator/src/base");
 
 //Initialize Firebase
 function initDataBase(){
@@ -29,13 +32,92 @@ const server = express();
 const PORT = 8080;
 server.use(cors());
 server.use(bodyParser.json());
+server.use(cookieParser());
 
 //Setting public directories
 server.use(express.static("../quizExercise"));
 
+// const SECRET = crypto.randomBytes(50).toString("hex");
+const SECRET = "50f6efe8fe36647122e412c70cecb853e94c498a8043e9d39d9b99320fac00ef52667f2ea0f67a870d8f70739971444eedd8";
+//preguntar que son los archivos .end o .length no se entiende y donde dice que deberia estar
+
+
+//Funciones
+function parseBase64(base64String) {
+
+    const parsedString = base64String.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_").toString("base64");
+    //Reemplazamos el = + \  que pueda contener nuestro string y los sustituimos por sin espacio - _ respectivamente  
+    return parsedString;
+}
+function encodeBase64(string) {
+    const encodedString = base64.encode(string); //encodeamos nuestro string en base64
+    const parsedString = parseBase64(encodedString); //parseamos nuestro string en base64
+    return parsedString;
+}
+
+function decodeBase64(base64String) {
+    const decodedString = base64.decode(base64String); //PORQUE HAY QUE DECODEARLO
+    return decodedString;
+}
+
+function hash(string, key = SECRET) {
+
+    const hashedString = parseBase64(crypto.createHmac("sha256", key).update(string).digest("base64"));
+    //debemos hashear nuestro parseado
+    //hmac es un algoritmo de hashing combinado con una contraseña
+    return hashedString;
+}
+
+function generateJWT(Payload) {
+    const header = {
+        "alg": "HS256", //esto es obligatorio que coincida con el hash?
+        "typ": "JWT"
+    };
+
+    const base64Header = encodeBase64(JSON.stringify(header));
+    const base64Payload = encodeBase64(JSON.stringify(Payload));
+    const signature = parseBase64(hash(`${base64Header}.${base64Payload}`));
+
+    const JWT = `${base64Header}.${base64Payload}.${signature}`;
+    return JWT;
+}
+
+function verifyJWT(jwt) {
+    const [header, payload, signature] = jwt.split(".");
+    if (header && payload && signature) {
+        const expectedSignature = parseBase64(hash(`${header}.${payload}`));
+        if (expectedSignature === signature)
+            return true;
+    }
+    console.log("No")
+    return false;
+}
+
+function getJWTInfo(jwt) {
+    const payload = jwt.split(".")[1];
+    if (payload) {
+        try {
+            const data = JSON.parse(decodeBase64(payload));
+            return data;
+        }
+        catch (e) {
+            return null;
+        }
+    }
+    return null;
+}
+
+function encryptPassword(string, salt = crypto.randomBytes(128).toString("hex")) {
+    let saltedPassword = hash(salt + string + salt, SECRET);
+    return { password: saltedPassword, salt };
+}
+
+function verifyPassword(string, realPassword) {
+    return encryptPassword(string, realPassword.salt).password === realPassword.password;
+
+}
+
 //Endpoints
-
-
 
 server.get("/Preguntas", (req,res) =>{
 
@@ -57,7 +139,7 @@ server.get("/getQuestion/:category", (req, res) => {
 
     let DBref = database.ref("/PreguntasQuiz");
 
-    // if(myCategories === "Deportes"){
+    // if(myCategories === "JSCorrect"){
 
         DBref.orderByChild("Cat").equalTo(myCategories).once("value", (data) =>{
             content = data.val();
@@ -116,85 +198,88 @@ server.post("/AddQuestion",(req, res) =>{
 
 
 
-server.post("/Player",[
+server.post("/SignUp",(req, res) => {
 
-    check('Nick')
-        .isLength({min : 3 , max :8})
-        // .isAlphanumeric("en-US")
-    ], (req, res) => {
+    if(req.body !== null){
 
-    // let miNick = req.body.Nick;
-    // console.log(miNick);
-    const errors = validationResult(req);
+        let scoreCat = {"HTMLCorrect": 0, "CssCorrect": 0, "JSCorrect": 0};
+        let playerDB = {scoreCat, ...req.body};
 
-    if (errors.isEmpty())
-    {
-        let player = {"Arte": 0, "Ciencia": 0, "Deportes": 0, ...req.body};
-        console.log(player);
+        console.log(playerDB);
 
-        let playerRef = firebase.database().ref(`/Jugadores/${player.Nick}||${player.Email}`);
-        playerRef.once("value", (dbData) => {
 
-            let data = dbData.val();
-            console.log(data);
+        let payload = { // este parametro se añade como parametro en la funcion generateJWT contiene los datos de nuestra sesion, es el contenido de la cookie
+            
+            "Nick" : req.body.Nick,
+            "Email" : req.body.Email,
+            "Psw" : req.body.Psw,
+            "ScoreCat" : scoreCat,
+            "iat" : new Date()
+        }
 
-            if  (data === null || (player.Arte >= data.Arte && player.Ciencia >= data.Ciencia && player.Deportes >= data.Deportes && (player.Arte > data.Arte || player.Ciencia > data.Ciencia || player.Deportes > data.Deportes)))
-            {
-                playerRef.set(player);
-                res.send({status: (data == null ? "Created" : "Updated"), ...player})
-            }
-            else
-            {
-                console.log("Error");
-                res.send({status: "Error", ...data});
-            }
-        });
+        // console.log(payload);
+        
+
+        if(payload){
+
+            // encryptPassword(payload.Psw);
+
+            // console.log(`"${SECRET}"`);
+
+            let JWT = generateJWT({payload, ip : req.ip}); // req ip evita que cualquier persona que nos ataque sino esta en el ordenador de la persona a la que le hemos dado el token, no le será valido// Porque se añade como clave aqui y no en el payload
+
+            // console.log(JWT);
+
+            res.cookie("jwt", JWT, { httpOnly : true});
+            //httpOnly evita que si alguien quiere ver nuestra cookie con document.cookie, no pueda verla
+
+            let playerRef = firebase.database().ref(`/Jugadores/${playerDB.Nick}`);
+            playerRef.once("value", (dbData) => {
+    
+                let data = dbData.val();
+    
+                if  (data === null || (playerDB.HTMLCorrect >= data.HTMLCorrect && playerDB.CssCorrect >= data.CssCorrect && playerDB.JSCorrect >= data.JSCorrect && (playerDB.HTMLCorrect > data.HTMLCorrect || playerDB.CssCorrect > data.CssCorrect || playerDB.JSCorrect > data.JSCorrect)))
+                {
+                    playerRef.set(playerDB);
+                    res.send({status: (data == null ? "Created" : "Updated"), ...playerDB})
+                }
+                else
+                {
+                    console.log("Error");
+                    res.send({status: "Error", ...data});
+                }
+            });
+        }
+
     }
     else {
         res.send({status: "Invalid"});
     }
 })
 
-server.post("/CheckCredentials", (req, res) =>{
+server.post("/LogIn", (req, res) =>{
 
     let myEmail = req.body.Email;
     let myPsw = req.body.Psw;
-
+    let JWT = req.cookies.jwt;    
+    
     let userRef = database.ref("Jugadores/");
 
-    let emailRef = userRef.child("/Email/");
-    let NickRef = userRef.child("/Nick/");
-    let PswRef = userRef.child("/Psw/");
+    userRef.once("value", (dbData) => {
 
-    NickRef.on("value", (dbData) =>{
+        const dbPlayers = Object.values(dbData.val());
 
-        dbNick = dbData.val();
+        let i = 0;
 
-        if(myEmail === dbNick)
-            res.send({msg : "validNick", Nick});
+        while (dbPlayers[i] && !((dbPlayers[i].Email === myEmail || dbPlayers[i].Nick === myEmail) && dbPlayers[i].Psw === myPsw)) {
+            i++;
+        }
+
+        if (dbPlayers[i])
+            console.log("Found", dbPlayers[i]);
         else
-            res.send({msg: "invalidNick"});
-    })
+            console.log("User not found")
 
-    emailRef.on("value", (dbData) =>{
-
-        dbEmail = dbData.val();
-
-        if(myEmail === dbEmail)
-            res.send({msg : "validEmail", Nick});
-        else
-            res.send({msg: "invalidEmail"});
-    })
-
-    
-    PswRef.on("value", (dbData) =>{
-
-        dbPsw = dbData.val();
-
-        if(myPsw === dbPsw)
-            res.send({msg : "validPsw"});
-        else
-            res.send({msg: "invalidPsw"});
     })
 })
 
