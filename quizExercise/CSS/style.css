@@ -2,10 +2,112 @@
     box-sizing: border-box;
 } */
 
+/* @-webkit-keyframes flip-horizontal-bottom {
+  0% {
+    -webkit-transform: rotateX(0);
+            transform: rotateX(0);
+  }
+  100% {
+    -webkit-transform: rotateX(-180deg);
+            transform: rotateX(-180deg);
+  }
+} */
+/* @keyframes flip-horizontal-bottom {
+  0% {
+    -webkit-transform: rotateX(0);
+            transform: rotateX(0);
+  }
+  100% {
+    -webkit-transform: rotateX(-180deg);
+            transform: rotateX(-180deg);
+  }
+} */
 /* @keyframes sink {
     0% { transform: translateY(0px);  }
     100% { transform: translateY(10px);  }
 } */
+
+ @-webkit-keyframes shake-horizontal {
+    0%,
+    100% {
+      -webkit-transform: translateX(0);
+              transform: translateX(0);
+    }
+    10%,
+    30%,
+    50%,
+    70% {
+      -webkit-transform: translateX(-5px);
+              transform: translateX(-5px);
+    }
+    20%,
+    40%,
+    60% {
+      -webkit-transform: translateX(5px);
+              transform: translateX(5px);
+    }
+    80% {
+      -webkit-transform: translateX(3px);
+              transform: translateX(3px);
+    }
+    90% {
+      -webkit-transform: translateX(-3px);
+              transform: translateX(-3px);
+    }
+  }
+  @keyframes shake-horizontal {
+    0%,
+    100% {
+      -webkit-transform: translateX(0);
+              transform: translateX(0);
+    }
+    10%,
+    30%,
+    50%,
+    70% {
+      -webkit-transform: translateX(-5px);
+              transform: translateX(-5px);
+    }
+    20%,
+    40%,
+    60% {
+      -webkit-transform: translateX(5px);
+              transform: translateX(5px);
+    }
+    80% {
+      -webkit-transform: translateX(3px);
+              transform: translateX(3px);
+    }
+    90% {
+      -webkit-transform: translateX(-3px);
+              transform: translateX(-3px);
+    }
+  }
+
+  @-webkit-keyframes blink-1 {
+    0%,
+    50%,
+    100% {
+      opacity: 1;
+    }
+    25%,
+    75% {
+      opacity: 0;
+    }
+  }
+  @keyframes blink-1 {
+    0%,
+    50%,
+    100% {
+      opacity: 1;
+    }
+    25%,
+    75% {
+      opacity: 0;
+    }
+  }
+  
+  
 
 body {
     background: #D6F6F2;
@@ -251,6 +353,7 @@ a:hover,a:active{
 #registrarUsuario{
 
     width: 150px;
+    font-size: 14px;
     text-align: center;
     color: white;
     background-color: #8EACB7;
@@ -295,6 +398,62 @@ a:hover,a:active{
     
 }
 
+#inputEmail{
+
+    margin-bottom: 20px;
+    background: rgba(82, 131, 139, 0.205);
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    border-bottom: 1px solid rgb(82, 131, 139);
+    width: 250px;
+    color: rgb(82, 131, 139);
+    font-size: 16px;
+    padding: 10px;
+
+}
+
+#inputPswBox{
+
+    margin-bottom: 20px;
+    background: rgba(82, 131, 139, 0.205);
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    border-bottom: 1px solid rgb(82, 131, 139);
+    width: 250px;
+    color: rgb(82, 131, 139);
+    font-size: 16px;
+    padding: 10px;
+    
+}
+
+#btnLogIn{
+
+    width: 150px;
+    font-size: 16px;
+    text-align: center;
+    color: white;
+    background-color: #8EACB7;
+    margin-top: 5px;
+    padding: 10px 25px 10px 25px;
+    border: 2px solid white;
+    border-radius: 5px;
+    box-shadow: 2px 2px 1px 1px  #556970;
+    text-decoration: none;
+    transform: translateY(0px);
+    transition: transform 0.15s ease-in-out, color 0.20s ease-in-out, background-color 0.20s ease-in-out, border-radius 0.20s ease-in-out;
+}
+
+#btnLogIn:hover, #btnLogIn:active{
+
+    transition: transform 0.15s ease-in-out, color 0.20s ease-in-out, background-color 0.20s ease-in-out, border-radius 0.20s ease-in-out;
+    border: 2px solid #8EACB7;
+    color: rgb(82, 131, 139);
+    background-color: white;
+    transform: translateY(5px);
+}
+
 
 
 .divEmpezar{
@@ -303,6 +462,37 @@ a:hover,a:active{
     justify-content: center;
     transform: translate(0px, -10px);
     position: relative;
+}
+
+.ErrorInput{
+
+    margin-bottom: 20px;
+    background: rgba(230, 68, 68, 0.205);
+    outline: none;
+    border: 1px solid rgb(201, 28, 28);;
+    border-radius: 5px;
+    width: 250px;
+    color: rgb(82, 131, 139);
+    font-size: 16px;
+    padding: 10px;
+    -webkit-animation: shake-horizontal 0.8s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+	        animation: shake-horizontal 0.8s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+
+}
+
+.greatInput{
+
+    margin-bottom: 20px;
+    background: rgba(92, 189, 89, 0.205);
+    outline: none;
+    border: 1px solid rgb(83, 197, 83);;
+    border-radius: 5px;
+    width: 250px;
+    color: rgb(82, 131, 139);
+    font-size: 16px;
+    padding: 10px;
+    -webkit-animation: blink-1 0.6s both;
+	        animation: blink-1 0.6s both;
 }
 
 

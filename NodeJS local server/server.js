@@ -6,7 +6,7 @@ const cors = require("cors");
 const firebase = require("firebase");
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto"); //viene por defecto conNodeJs
-const { header } = require("express-validator");
+// const { header } = require("express-validator");
 // const { contextsKey } = require("express-validator/src/base");
 const dotenv = require("dotenv").config();
 
@@ -42,15 +42,6 @@ server.use(express.static("../quizExercise"));
 // const SECRET = crypto.randomBytes(50).toString("hex");
 const SECRET = process.env.SECRET;
 //preguntar que son los archivos .env no se entiende y donde dice que deberia estar
-
-//Regex
-
-let validateNick = / ^[a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){3,18}[a-zA-Z0-9]$/g
-
-let validateEmail = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/g
-
-let validatePsw = /^(?=.*[0-9]+.*)(?=.*[a-zA-Z]+.*)[0-9a-zA-Z]{6,}$/g
-
 
 //Funciones
 function parseBase64(base64String) {
@@ -165,7 +156,7 @@ server.get("/getQuestion/:category", (req, res) => {
 
 server.get("/VerifyJWT", (req,res) =>{
 
-    let JWT = req.cookies.JWT;
+    let JWT = req.cookies.jwt;
 
     if (JWT) {
         //If the JWT was verified, I sent them the info, if not, clear the cookie
@@ -180,8 +171,25 @@ server.get("/VerifyJWT", (req,res) =>{
             res.clearCookie("jwt");
             res.send({ msg: "invalid session" });
         }
+    }else{
+
+        res.send({msg : "no JWT"});
     }
 
+})
+
+server.get("/LogIn", (req, res) =>{
+
+    let JWT = req.query.temporaryJWT;
+
+    if (verifyJWT(JWT)){
+
+        const {iat, ...payload} = getJWTInfo(JWT); //este payload no caduca
+        JWT = generateJWT(payload)
+
+        res.cookie("jwt", JWT, { httpOnly : true});
+        res.redirect("/menu.html");
+    }
 })
 
 //POST
@@ -235,67 +243,48 @@ server.post("/SignUp",(req, res) => {
         let scoreCat = {"HTMLCorrect": 0, "CssCorrect": 0, "JSCorrect": 0};
         let playerDB = {scoreCat, ...req.body};
 
-        console.log(playerDB);
+        // console.log(playerDB);
 
-        if(req.body.Nick === validateNick)
-            res.send({msg : "ValidNick"})
-        else
-            res.send({msg : "invalidNick"})
-
-        if(req.body.Email === validateEmail)
-            res.send({msg : "ValidEmail"})
-        else
-            res.send({msg : "invalidEmail"})
-
-        if(req.body.Psw === validatePsw)
-            res.send({msg : "ValidPsw"})
-        else
-            res.send({msg : "invalidPsw"})
-
-        if(req.body.Nick === validateNick && req.body.Email === validateEmail && req.body.Psw === validatePsw){
-
-            let payload = { // este parametro se añade como parametro en la funcion generateJWT contiene los datos de nuestra sesion, es el contenido de la cookie
-                
-                "Nick" : req.body.Nick,
-                "Email" : req.body.Email,
-                // "Psw" : req.body.Psw,  nunca se pasa la contraseña en el cuerpo de la cookie
-                "ScoreCat" : scoreCat,
-                "iat" : new Date().setMilliseconds(30000)
-            }
-    
-            // console.log(payload);
+        let payload = { // este parametro se añade como parametro en la funcion generateJWT contiene los datos de nuestra sesion, es el contenido de la cookie
             
-    
-            if(payload){
-    
-                // encryptPassword(payload.Psw);
-    
-                // console.log(`"${SECRET}"`);
-    
-                let temporaryJWT = generateJWT({payload, ip : req.ip}); // req ip evita que cualquier persona que nos ataque sino esta en el ordenador de la persona a la que le hemos dado el token, no le será valido// Porque se añade como clave aqui y no en el payload
-    
-                res.send(temporaryJWT);
-    
-                // console.log(JWT);
-    
-                let playerRef = firebase.database().ref(`/Jugadores/${playerDB.Nick}`);
-                playerRef.once("value", (dbData) => {
-        
-                    let data = dbData.val();
-        
-                    if  (data === null || (playerDB.HTMLCorrect >= data.HTMLCorrect && playerDB.CssCorrect >= data.CssCorrect && playerDB.JSCorrect >= data.JSCorrect && (playerDB.HTMLCorrect > data.HTMLCorrect || playerDB.CssCorrect > data.CssCorrect || playerDB.JSCorrect > data.JSCorrect)))
-                    {
-                        playerRef.set(playerDB);
-                        res.send({status: (data == null ? "Created" : "Updated"), ...playerDB})
-                    }
-                    else
-                    {
-                        console.log("Error");
-                        res.send({status: "Error", ...data});
-                    }
-                });
-            }
+            "Nick" : req.body.Nick,
+            "Email" : req.body.Email,
+            // "Psw" : req.body.Psw,  nunca se pasa la contraseña en el cuerpo de la cookie
+            "ScoreCat" : scoreCat,
+            "iat" : new Date() + 30000
         }
+
+        console.log(payload);
+        
+
+        if(payload){
+
+            // encryptPassword(payload.Psw);
+
+            // console.log(`"${SECRET}"`);
+
+            //let temporaryJWT = generateJWT({payload, ip : req.ip}); // req ip evita que cualquier persona que nos ataque sino esta en el ordenador de la persona a la que le hemos dado el token, no le será valido// Porque se añade como clave aqui y no en el payload
+
+            // console.log(JWT);
+
+            let playerRef = firebase.database().ref(`/Jugadores/${playerDB.Nick}`);
+            playerRef.once("value", (dbData) => {
+    
+                let data = dbData.val();
+    
+                if  (data === null || (playerDB.HTMLCorrect >= data.HTMLCorrect && playerDB.CssCorrect >= data.CssCorrect && playerDB.JSCorrect >= data.JSCorrect && (playerDB.HTMLCorrect > data.HTMLCorrect || playerDB.CssCorrect > data.CssCorrect || playerDB.JSCorrect > data.JSCorrect)))
+                {
+                    playerRef.set(playerDB);
+                    res.send({status: (data == null ? "Created" : "Updated"), ...playerDB, temporaryJWT : generateJWT({payload, ip : req.ip})})
+                }
+                else
+                {
+                    console.log("Error");
+                    res.send({status: "Error", ...data});
+                }
+            });
+        }
+        
 
 
 
@@ -305,10 +294,11 @@ server.post("/SignUp",(req, res) => {
     }
 })
 
+
 server.post("/LogIn", (req, res) =>{
 
     let myEmail = req.body.Email;
-    let myPsw = req.body.Psw;    
+    let myPsw = req.body.Psw;   
     
     let userRef = database.ref("Jugadores/");
 
@@ -322,10 +312,14 @@ server.post("/LogIn", (req, res) =>{
             i++;
         }
 
-        if (dbPlayers[i])
-            console.log("Found", dbPlayers[i]);
-        else
-            console.log("User not found")
+        if (dbPlayers[i]){
+
+            const {Psw,...payload} = dbPlayers[i]; //obviar la psw
+            res.send({msg : "foundUser", temporaryJWT : generateJWT({payload, ip : req.ip})})
+
+        }else{}
+            
+            //toDo res send user not found
 
     })
 })

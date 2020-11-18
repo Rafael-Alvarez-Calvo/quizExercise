@@ -7,6 +7,24 @@ let contadorPregunta = 0;
 let contadorAvisoFalloRegistro = 0;
 let category;
 
+//Regex
+
+let validateNick = /^[a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){3,18}[a-zA-Z0-9]$/
+
+let validateEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+let validatePsw = /^(?=.*[0-9]+.*)(?=.*[a-zA-Z]+.*)[0-9a-zA-Z]{6,}$/
+
+fetch("http://localhost:8080/VerifyJWT")
+.then(res => res.json())
+.then((data) =>{
+    console.log(data);
+    if(!data.msg){
+
+        entrarAlMenu();
+    }
+})
+
 function pintarInicio(){
 
     let contenedorLogo = document.createElement("div");
@@ -73,7 +91,7 @@ function pintarLogIn(e){
 
     let inputEmail = document.createElement("input");
     inputEmail.id = "inputEmail";
-    inputEmail.placeholder = "Nombre de usuario o correo electrónico";
+    inputEmail.placeholder = "Usuario o correo electrónico";
 
     let inputPswBox = document.createElement("input");
     inputPswBox.type = "password";
@@ -104,56 +122,83 @@ function comprobarCredenciales(){
     }
 
     fetch('http://localhost:8080/LogIn',{
-        method : "POST",
-        headers : {
-            'Content-Type' : 'application/json'
-        },
-        body : JSON.stringify(credentials)
-    })
+            method : "POST",
+            headers : {
+                'Content-Type' : 'application/json'
+            },
+            body : JSON.stringify(credentials)
+        })
+        .then(res => res.json())
+        .then((data) =>{
+            
+            let JWT = data.temporaryJWT;
+            let msgResDB = data.msg;
+            // document.cookie += "; tokenTemporary=" + JWT;
+            // sessionStorage.clear('token'); QUESTION tengo que limpiar la sessionstorage o ya con la expiracion con la que viene el jwt me vale
 
-    .then(res => res.json())
-    .then((data) =>{
+            // console.log(msgResDB);
 
-        let responses = data.msg;
+            switch(msgResDB){
+    
+                case "foundUser":
 
-        switch(responses){
+                    window.location = `/LogIn?temporaryJWT=${JWT}`;
 
-            case "validNick":
-            case "validEmail":
-            case "validPsw":
+                    break;
 
-                setTimeout(() =>{
+    // fetch('http://localhost:8080/LogIn',{
+    //     method : "POST",
+    //     headers : {
+    //         'Content-Type' : 'application/json'
+    //     },
+    //     body : JSON.stringify(credentials)
+    // })
 
-                    document.querySelector("#contenedorInputsLogIn").remove();
+    // .then(res => res.json())
+    // .then((data) =>{
 
-                },500);
+    //     let responses = data.msg;
 
-                setTimeout(() =>{
+    //     switch(responses){
 
-                    let welcomeMsg = document.createElement("h1");
-                    welcomeMsg.innerText = `Bienvenido ${data.Nick}`;
-                    welcomeMsg.id = "welcomeMsg";
-                    bodySelector.appendChild(welcomeMsg);
+    //         case "validNick":
+    //         case "validEmail":
+    //         case "validPsw":
 
-                    setTimeout(() =>{
+    //             setTimeout(() =>{
 
-                        document.getElementById("welcomeMsg").remove();
-                        entrarAlMenu();
-                    },2000)
+    //                 document.querySelector("#contenedorInputsLogIn").remove();
 
-                },600)
+    //             },500);
 
-                break;
+    //             setTimeout(() =>{
 
-            case "invalidNick":
-            case "invalidEmail":
-            case "invalidPsw":
+    //                 let welcomeMsg = document.createElement("h1");
+    //                 welcomeMsg.innerText = `Bienvenido ${data.Nick}`;
+    //                 welcomeMsg.id = "welcomeMsg";
+    //                 bodySelector.appendChild(welcomeMsg);
 
-                console.log("El email no existe");
-                break;
+    //                 setTimeout(() =>{
 
-        }
-    })
+    //                     document.getElementById("welcomeMsg").remove();
+    //                     entrarAlMenu();
+    //                 },2000)
+
+    //             },600)
+
+    //             break;
+
+    //         case "invalidNick":
+    //         case "invalidEmail":
+    //         case "invalidPsw":
+
+    //             console.log("El email no existe");
+    //             break;
+
+    //     }
+    // })
+            }
+        })
 }
 
 function pintarRegistro(e){
@@ -212,7 +257,14 @@ function pintarRegistro(e){
         linkToLogInRegisterForm.id = "linkToLogInRegisterForm";
         linkToLogInRegisterForm.href = "#";
         linkToLogInRegisterForm.innerText = "Log In";
-        linkToLogInRegisterForm.addEventListener("click",pintarLogIn);
+        linkToLogInRegisterForm.addEventListener("click",() =>{
+
+            // e.preventDefault();
+
+            selectorLogo.transform = "translateY(100px)";
+
+            pintarLogIn(e);
+        });
 
         formRegister.append(registrarUsuario,alreadyHaveAccount);
         alreadyHaveAccount.appendChild(linkToLogInRegisterForm);
@@ -230,125 +282,162 @@ function registrarJugador(e){
     let getNick = document.getElementById("Nombredeusuario");
     let getEmail = document.getElementById("Correoelectrónico");
     let getPassword = document.getElementById("Contraseña");
+
+    // let squareIcon = document.createElement("i");
+    // squareIcon.id = "squareIcon";
+    // squareIcon.className = "far fa-check-square";
+    // squareIcon.setAttribute("aria-hidden", "true");
+
+    if (validateNick.test(getNick.value)){ //Validamos Nick
+        getNick.className = "greatInput";
+        // document.querySelector("#Nombredeusuario").appendChild(squareIcon);
     
-    let newNickName = {
+    }else{
+        
+        getNick.className = "ErrorInput"; 
+        getNick.value = "";
 
-        Nick : getNick.value,
-        Email : getEmail.value,
-        Psw : getPassword.value
-        
-    };
+        setTimeout(() =>{
+            getNick.className = "inputsFormRegister";
+        },1200)
 
-    fetch('http://localhost:8080/SignUp',{
-        method : "POST",
-        headers : {
-            'Content-Type' : 'application/json'
-        },
-        body : JSON.stringify(newNickName)
-    })
-    .then(res => res.json())
-    .then((data) =>{
+    }
+    if (validateEmail.test(getEmail.value)){
 
-        let JWT = data.temporaryJWT;
-        let validationMsg = data.msg;
-        
+        getEmail.className = "greatInput";
+        // getEmail.append(squareIcon);
 
-        switch(validationMsg){
+    }else{
 
-            case "ValidNick":
-            case "ValidEmail":
-            case "ValidPsw":
+        getEmail.className = "ErrorInput"; 
+        
+        setTimeout(() =>{
+            getEmail.value = "";
+            getEmail.className = "inputsFormRegister";
+        },1200)
+    }
+    if (validatePsw.test(getPassword.value)){
 
-                let statusResDB = data.status;
-                sessionStorage.setItem('token', JWT);
-                // sessionStorage.clear('token'); QUESTION tengo que limpiar la sessionstorage o ya con la expiracion con la que viene el jwt me vale
+        getPassword.className = "greatInput";
+        // getPassword.appendChild(squareIcon);
+        
+    }else{
+        
+        getPassword.className = "ErrorInput"; 
+        getPassword.value = "";
+    
+        setTimeout(() =>{
+            getPassword.className = "inputsFormRegister";
+        },1200)
+    }
 
-                switch(statusResDB){
-        
-                    case "Created":
-                    case "Updated":
-        
-                        fetch('http://localhost:8080/VerifyJWT')
-                        // QUESTION le debo enviar algo?
-        
-                        .then(res => res.json())
-        
-                        .then(() =>{
-        
-                            window.location = "menu.html";
-                            setTimeout(()=> {
-        
-                                entrarAlMenu();
-        
-                            },100);
-                        })
-        
-                        //ytoDO mensaje de bienvenida y entrar al menu
-        
-                        // formRegister.className = "contenedorFadeOut";
-        
-                        // setTimeout(() =>{
-                        // formRegister.className = "contenedorHidden";
-                        // },550)
-        
-                        // setTimeout(() =>{
-        
-                        //     let divEmpezar = document.createElement("div");
-                        //     divEmpezar.className = "divEmpezar";
-                        //     bodySelector.appendChild(divEmpezar);
-                
-                        //     let entrarMenu = document.createElement("button");
-                
-                        //     entrarMenu.className = "entrarMenu"
-                        //     entrarMenu.innerText = "ENTRAR AL MENU";
-                
-                        //     entrarMenu.setAttribute("id", "entrarMenu");
-                
-                        //     divEmpezar.appendChild(entrarMenu);
-                
-                        //     entrarMenu.addEventListener("click",entrarAlMenu);
-                
-                        // },600);
-        
-                        break;
-        
-                    case "Error":
+    if(validateNick.test(getNick.value) && validateEmail.test(getEmail.value) && validatePsw.test(getPassword.value)){
 
-                        // setTimeout(() =>{
-        
-                        //     let AvisoNickRegistrado = document.createElement("p");
-                        //     AvisoNickRegistrado.setAttribute("id", "avisoFalloNick")
-                        //     AvisoNickRegistrado.innerText = "Ese Nick ya está registrado";
-                        //     bodySelector.appendChild(AvisoNickRegistrado);
-                        //     contadorAvisoFalloRegistro ++;
-        
-                        // },100)
+        let newNickName = {
+    
+            Nick : getNick.value,
+            Email : getEmail.value,
+            Psw : getPassword.value
+            
+        };
+    
+        fetch('http://localhost:8080/SignUp',{
+            method : "POST",
+            headers : {
+                'Content-Type' : 'application/json'
+            },
+            body : JSON.stringify(newNickName)
+        })
+        .then(res => res.json())
+        .then((data) =>{
+            
+            let JWT = data.temporaryJWT;
+            let statusResDB = data.status;
+            // document.cookie += "; tokenTemporary=" + JWT;
+            // sessionStorage.clear('token'); QUESTION tengo que limpiar la sessionstorage o ya con la expiracion con la que viene el jwt me vale
 
-                        //toDo crear mensaje ese nick ya esta registrado
-        
-                        break;
-        
-                    case "Invalid":
-        
-                        // formRegister.className = "formRegister";
-                        // AvisoFalloRegistroNickCaracteres();
+            console.log(statusResDB);
 
-                        //toDO crear mensaje todos los campos deben estar rellenados
-        
-                        break;
-                
-                }
+            switch(statusResDB){
+    
+                case "Created":
+                case "Updated":
 
-                break;
+                    window.location = `/LogIn?temporaryJWT=${JWT}`; //accedo por get al back
+                    // fetch('http://localhost:8080/VerifyJWT')
+                    // QUESTION le debo enviar algo?
+    
+                    
+    
+                    //ytoDO mensaje de bienvenida y entrar al menu
+    
+                    // formRegister.className = "contenedorFadeOut";
+    
+                    // setTimeout(() =>{
+                    // formRegister.className = "contenedorHidden";
+                    // },550)
+    
+                    // setTimeout(() =>{
+    
+                    //     let divEmpezar = document.createElement("div");
+                    //     divEmpezar.className = "divEmpezar";
+                    //     bodySelector.appendChild(divEmpezar);
+            
+                    //     let entrarMenu = document.createElement("button");
+            
+                    //     entrarMenu.className = "entrarMenu"
+                    //     entrarMenu.innerText = "ENTRAR AL MENU";
+            
+                    //     entrarMenu.setAttribute("id", "entrarMenu");
+            
+                    //     divEmpezar.appendChild(entrarMenu);
+            
+                    //     entrarMenu.addEventListener("click",entrarAlMenu);
+            
+                    // },600);
+    
+                    break;
+    
+                case "Error":
 
-            case "InvalidNick" : 
+                    // setTimeout(() =>{
+    
+                    //     let AvisoNickRegistrado = document.createElement("p");
+                    //     AvisoNickRegistrado.setAttribute("id", "avisoFalloNick")
+                    //     AvisoNickRegistrado.innerText = "Ese Nick ya está registrado";
+                    //     bodySelector.appendChild(AvisoNickRegistrado);
+                    //     contadorAvisoFalloRegistro ++;
+    
+                    // },100)
 
-                break;
-                
-        
-        }
-        
-    })
+                    //toDo crear mensaje ese nick ya esta registrado
+    
+                    break;
+    
+                case "Invalid":
+    
+                    // formRegister.className = "formRegister";
+                    // AvisoFalloRegistroNickCaracteres();
+
+                    //toDO crear mensaje todos los campos deben estar rellenados
+    
+                    break;
+            
+            }
+            
+            
+    
+            
+    
+    
+                 
+            
+            
+            
+        })
+
+    }
+    
 }
 
 function AvisoFalloRegistroNickCaracteres(){
