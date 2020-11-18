@@ -6,7 +6,9 @@ const cors = require("cors");
 const firebase = require("firebase");
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto"); //viene por defecto conNodeJs
+const { header } = require("express-validator");
 // const { contextsKey } = require("express-validator/src/base");
+const dotenv = require("dotenv").config();
 
 //Initialize Firebase
 function initDataBase(){
@@ -29,7 +31,7 @@ let database = firebase.database();
 
 //Express setup
 const server = express();
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 server.use(cors());
 server.use(bodyParser.json());
 server.use(cookieParser());
@@ -38,8 +40,16 @@ server.use(cookieParser());
 server.use(express.static("../quizExercise"));
 
 // const SECRET = crypto.randomBytes(50).toString("hex");
-const SECRET = "50f6efe8fe36647122e412c70cecb853e94c498a8043e9d39d9b99320fac00ef52667f2ea0f67a870d8f70739971444eedd8";
-//preguntar que son los archivos .end o .length no se entiende y donde dice que deberia estar
+const SECRET = process.env.SECRET;
+//preguntar que son los archivos .env no se entiende y donde dice que deberia estar
+
+//Regex
+
+let validateNick = / ^[a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){3,18}[a-zA-Z0-9]$/g
+
+let validateEmail = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/g
+
+let validatePsw = /^(?=.*[0-9]+.*)(?=.*[a-zA-Z]+.*)[0-9a-zA-Z]{6,}$/g
 
 
 //Funciones
@@ -61,7 +71,6 @@ function decodeBase64(base64String) {
 }
 
 function hash(string, key = SECRET) {
-
     const hashedString = parseBase64(crypto.createHmac("sha256", key).update(string).digest("base64"));
     //debemos hashear nuestro parseado
     //hmac es un algoritmo de hashing combinado con una contraseña
@@ -141,17 +150,38 @@ server.get("/getQuestion/:category", (req, res) => {
 
     // if(myCategories === "JSCorrect"){
 
-        DBref.orderByChild("Cat").equalTo(myCategories).once("value", (data) =>{
-            content = data.val();
-            if (content)
-            {
-                // console.log(Object.values(content).filter(el => el));
-                res.send(Object.values(content).filter(el => el)); //el filter va a eliminar del array todo lo que de NaN, Undefined, Null, 0,....
-            }
-            else{
-                res.send({msg : "No existen preguntas de esta categoria"})
-            }
-        })
+    DBref.orderByChild("Cat").equalTo(myCategories).once("value", (data) =>{
+        content = data.val();
+        if (content)
+        {
+            // console.log(Object.values(content).filter(el => el));
+            res.send(Object.values(content).filter(el => el)); //el filter va a eliminar del array todo lo que de NaN, Undefined, Null, 0,....
+        }
+        else{
+            res.send({msg : "No existen preguntas de esta categoria"})
+        }
+    })
+})
+
+server.get("/VerifyJWT", (req,res) =>{
+
+    let JWT = req.cookies.JWT;
+
+    if (JWT) {
+        //If the JWT was verified, I sent them the info, if not, clear the cookie
+        if (verifyJWT(JWT)){
+
+            res.cookie("jwt", JWT, { httpOnly : true});
+            res.send(getJWTInfo(JWT));
+            
+            //httpOnly evita que si alguien quiere ver nuestra cookie con document.}cookie, no pueda verla
+        }
+        else {
+            res.clearCookie("jwt");
+            res.send({ msg: "invalid session" });
+        }
+    }
+
 })
 
 //POST
@@ -207,49 +237,67 @@ server.post("/SignUp",(req, res) => {
 
         console.log(playerDB);
 
+        if(req.body.Nick === validateNick)
+            res.send({msg : "ValidNick"})
+        else
+            res.send({msg : "invalidNick"})
 
-        let payload = { // este parametro se añade como parametro en la funcion generateJWT contiene los datos de nuestra sesion, es el contenido de la cookie
+        if(req.body.Email === validateEmail)
+            res.send({msg : "ValidEmail"})
+        else
+            res.send({msg : "invalidEmail"})
+
+        if(req.body.Psw === validatePsw)
+            res.send({msg : "ValidPsw"})
+        else
+            res.send({msg : "invalidPsw"})
+
+        if(req.body.Nick === validateNick && req.body.Email === validateEmail && req.body.Psw === validatePsw){
+
+            let payload = { // este parametro se añade como parametro en la funcion generateJWT contiene los datos de nuestra sesion, es el contenido de la cookie
+                
+                "Nick" : req.body.Nick,
+                "Email" : req.body.Email,
+                // "Psw" : req.body.Psw,  nunca se pasa la contraseña en el cuerpo de la cookie
+                "ScoreCat" : scoreCat,
+                "iat" : new Date().setMilliseconds(30000)
+            }
+    
+            // console.log(payload);
             
-            "Nick" : req.body.Nick,
-            "Email" : req.body.Email,
-            "Psw" : req.body.Psw,
-            "ScoreCat" : scoreCat,
-            "iat" : new Date()
-        }
-
-        // console.log(payload);
+    
+            if(payload){
+    
+                // encryptPassword(payload.Psw);
+    
+                // console.log(`"${SECRET}"`);
+    
+                let temporaryJWT = generateJWT({payload, ip : req.ip}); // req ip evita que cualquier persona que nos ataque sino esta en el ordenador de la persona a la que le hemos dado el token, no le será valido// Porque se añade como clave aqui y no en el payload
+    
+                res.send(temporaryJWT);
+    
+                // console.log(JWT);
+    
+                let playerRef = firebase.database().ref(`/Jugadores/${playerDB.Nick}`);
+                playerRef.once("value", (dbData) => {
         
-
-        if(payload){
-
-            // encryptPassword(payload.Psw);
-
-            // console.log(`"${SECRET}"`);
-
-            let JWT = generateJWT({payload, ip : req.ip}); // req ip evita que cualquier persona que nos ataque sino esta en el ordenador de la persona a la que le hemos dado el token, no le será valido// Porque se añade como clave aqui y no en el payload
-
-            // console.log(JWT);
-
-            res.cookie("jwt", JWT, { httpOnly : true});
-            //httpOnly evita que si alguien quiere ver nuestra cookie con document.cookie, no pueda verla
-
-            let playerRef = firebase.database().ref(`/Jugadores/${playerDB.Nick}`);
-            playerRef.once("value", (dbData) => {
-    
-                let data = dbData.val();
-    
-                if  (data === null || (playerDB.HTMLCorrect >= data.HTMLCorrect && playerDB.CssCorrect >= data.CssCorrect && playerDB.JSCorrect >= data.JSCorrect && (playerDB.HTMLCorrect > data.HTMLCorrect || playerDB.CssCorrect > data.CssCorrect || playerDB.JSCorrect > data.JSCorrect)))
-                {
-                    playerRef.set(playerDB);
-                    res.send({status: (data == null ? "Created" : "Updated"), ...playerDB})
-                }
-                else
-                {
-                    console.log("Error");
-                    res.send({status: "Error", ...data});
-                }
-            });
+                    let data = dbData.val();
+        
+                    if  (data === null || (playerDB.HTMLCorrect >= data.HTMLCorrect && playerDB.CssCorrect >= data.CssCorrect && playerDB.JSCorrect >= data.JSCorrect && (playerDB.HTMLCorrect > data.HTMLCorrect || playerDB.CssCorrect > data.CssCorrect || playerDB.JSCorrect > data.JSCorrect)))
+                    {
+                        playerRef.set(playerDB);
+                        res.send({status: (data == null ? "Created" : "Updated"), ...playerDB})
+                    }
+                    else
+                    {
+                        console.log("Error");
+                        res.send({status: "Error", ...data});
+                    }
+                });
+            }
         }
+
+
 
     }
     else {
@@ -260,8 +308,7 @@ server.post("/SignUp",(req, res) => {
 server.post("/LogIn", (req, res) =>{
 
     let myEmail = req.body.Email;
-    let myPsw = req.body.Psw;
-    let JWT = req.cookies.jwt;    
+    let myPsw = req.body.Psw;    
     
     let userRef = database.ref("Jugadores/");
 

@@ -227,15 +227,15 @@ function registrarJugador(e){
 
     e.preventDefault();
     
-    let getValueNick = document.getElementById("Nombredeusuario").value;
-    let getValueEmail = document.getElementById("Correoelectrónico").value;
-    let getValuePassword = document.getElementById("Contraseña").value;
+    let getNick = document.getElementById("Nombredeusuario");
+    let getEmail = document.getElementById("Correoelectrónico");
+    let getPassword = document.getElementById("Contraseña");
     
     let newNickName = {
 
-        Nick : getValueNick,
-        Email : getValueEmail,
-        Psw : getValuePassword
+        Nick : getNick.value,
+        Email : getEmail.value,
+        Psw : getPassword.value
         
     };
 
@@ -249,63 +249,105 @@ function registrarJugador(e){
     .then(res => res.json())
     .then((data) =>{
 
-        let estados = data.status;
-        console.log(data, estados)
-        // console.log(puntuacion);
-        // console.log(data.state);
-        switch(estados){
+        let JWT = data.temporaryJWT;
+        let validationMsg = data.msg;
+        
 
-            case "Created":
-            case "Updated":
+        switch(validationMsg){
 
-                formRegister.className = "contenedorFadeOut";
+            case "ValidNick":
+            case "ValidEmail":
+            case "ValidPsw":
 
-                setTimeout(() =>{
-                formRegister.className = "contenedorHidden";
-                },550)
+                let statusResDB = data.status;
+                sessionStorage.setItem('token', JWT);
+                // sessionStorage.clear('token'); QUESTION tengo que limpiar la sessionstorage o ya con la expiracion con la que viene el jwt me vale
 
-                setTimeout(() =>{
+                switch(statusResDB){
+        
+                    case "Created":
+                    case "Updated":
+        
+                        fetch('http://localhost:8080/VerifyJWT')
+                        // QUESTION le debo enviar algo?
+        
+                        .then(res => res.json())
+        
+                        .then(() =>{
+        
+                            window.location = "menu.html";
+                            setTimeout(()=> {
+        
+                                entrarAlMenu();
+        
+                            },100);
+                        })
+        
+                        //ytoDO mensaje de bienvenida y entrar al menu
+        
+                        // formRegister.className = "contenedorFadeOut";
+        
+                        // setTimeout(() =>{
+                        // formRegister.className = "contenedorHidden";
+                        // },550)
+        
+                        // setTimeout(() =>{
+        
+                        //     let divEmpezar = document.createElement("div");
+                        //     divEmpezar.className = "divEmpezar";
+                        //     bodySelector.appendChild(divEmpezar);
+                
+                        //     let entrarMenu = document.createElement("button");
+                
+                        //     entrarMenu.className = "entrarMenu"
+                        //     entrarMenu.innerText = "ENTRAR AL MENU";
+                
+                        //     entrarMenu.setAttribute("id", "entrarMenu");
+                
+                        //     divEmpezar.appendChild(entrarMenu);
+                
+                        //     entrarMenu.addEventListener("click",entrarAlMenu);
+                
+                        // },600);
+        
+                        break;
+        
+                    case "Error":
 
-                    let divEmpezar = document.createElement("div");
-                    divEmpezar.className = "divEmpezar";
-                    bodySelector.appendChild(divEmpezar);
+                        // setTimeout(() =>{
         
-                    let entrarMenu = document.createElement("button");
+                        //     let AvisoNickRegistrado = document.createElement("p");
+                        //     AvisoNickRegistrado.setAttribute("id", "avisoFalloNick")
+                        //     AvisoNickRegistrado.innerText = "Ese Nick ya está registrado";
+                        //     bodySelector.appendChild(AvisoNickRegistrado);
+                        //     contadorAvisoFalloRegistro ++;
         
-                    entrarMenu.className = "entrarMenu"
-                    entrarMenu.innerText = "ENTRAR AL MENU";
+                        // },100)
+
+                        //toDo crear mensaje ese nick ya esta registrado
         
-                    entrarMenu.setAttribute("id", "entrarMenu");
+                        break;
         
-                    divEmpezar.appendChild(entrarMenu);
+                    case "Invalid":
         
-                    entrarMenu.addEventListener("click",entrarAlMenu);
+                        // formRegister.className = "formRegister";
+                        // AvisoFalloRegistroNickCaracteres();
+
+                        //toDO crear mensaje todos los campos deben estar rellenados
         
-                },600);
+                        break;
+                
+                }
 
                 break;
 
-            case "Error":
-                setTimeout(() =>{
-
-                    let AvisoNickRegistrado = document.createElement("p");
-                    AvisoNickRegistrado.setAttribute("id", "avisoFalloNick")
-                    AvisoNickRegistrado.innerText = "Ese Nick ya está registrado";
-                    bodySelector.appendChild(AvisoNickRegistrado);
-                    contadorAvisoFalloRegistro ++;
-
-                },100)
+            case "InvalidNick" : 
 
                 break;
-
-            case "Invalid":
-
-                formRegister.className = "formRegister";
-                AvisoFalloRegistroNickCaracteres();
-
-                break;
+                
         
         }
+        
     })
 }
 
@@ -340,10 +382,9 @@ async function entrarAlMenu(){
 
     setTimeout(() =>{
 
-        // window.location = "quiz.html";
-        // document.querySelectorAll("div").forEach(node =>{
-        //     node.remove();  
-        // })
+        document.querySelectorAll("div").forEach(node =>{
+            node.remove();  
+        })
 
         let categoriasTitulo = document.createElement("h1");
         categoriasTitulo.innerText = "Elige categoria";
