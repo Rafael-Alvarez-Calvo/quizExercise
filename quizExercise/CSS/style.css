@@ -456,12 +456,70 @@ a:hover,a:active{
 
 
 
-.divEmpezar{
+#CatContainer{
     display: flex;
     flex-direction: column;
     justify-content: center;
     transform: translate(0px, -10px);
     position: relative;
+}
+
+/* @import url('https://fonts.googleapis.com/css?family=Monoton'); */
+#htmlCatBtn{
+    
+    width: 180px;
+    height: 150px;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 100px;
+    word-spacing: 15px;
+    border: 2px solid  rgb(102, 0, 0);
+    box-shadow: 0 0 10px 0 rgb(102, 0, 0);
+    box-shadow: 0 0 10px 0 rgb(102, 0, 0) inset;
+    color: rgb(194, 78, 0);
+    background-color:  rgba(194, 78, 0, 0.4);
+    text-decoration: underline;
+    text-shadow: rgb(102, 0, 0) 3px 0px 0px;
+}
+i.fa-html5{
+    margin-top: 10px;
+}
+#cssCatBtn{
+    
+    width: 180px;
+    height: 150px;
+    text-transform: uppercase;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 100px;
+    word-spacing: 15px;
+    border: 2px solid  #2061af;
+    box-shadow: 0 0 10px 0 #2061af;
+    box-shadow: 0 0 10px 0 #2061af inset;
+    color: #369bd6;
+    background-color: #369bd640;
+    text-decoration: underline;
+    text-shadow:#2061af 3px 0px 0px;
+}
+i.fa-css3-alt{
+    margin-top: 10px;
+}
+#jsCatBtn{
+    
+    width: 180px;
+    height: 150px;
+    text-transform: uppercase;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 100px;
+    word-spacing: 15px;
+    border: 2px solid  #ffd503;
+    box-shadow: 0 0 10px 0 #ffd503;
+    box-shadow: 0 0 10px 0 #ffd503 inset;
+    color: #d4b830;
+    background-color:#d4b83040;
+    text-decoration: underline;
+    text-shadow:#ffd503 3px 0px 0px;
 }
 
 .ErrorInput{

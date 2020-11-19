@@ -475,43 +475,48 @@ async function entrarAlMenu(){
             node.remove();  
         })
 
-        let categoriasTitulo = document.createElement("h1");
-        categoriasTitulo.innerText = "Elige categoria";
-        bodySelector.appendChild(categoriasTitulo);
+        let CatContainer = document.createElement("div");
+        CatContainer.id = "CatContainer";
 
-        let contenedorCategorias = document.createElement("div");
-        
-        let botonDeportes = document.createElement("button");
-        botonDeportes.innerText = "DEPORTES";
-        botonDeportes.setAttribute("id", "Deportes");
-        botonDeportes.addEventListener("click",()  => {
-            category = "Deportes";
+        // let categoryTitle = document.createElement("h1");
+        // categoryTitle.id = "categoryTitle";
+        // categoryTitle.innerText = "Elige categoria";
+
+        let catHTML = document.createElement("button");
+        // catHTML.innerText = "HTML";
+        catHTML.id = "htmlCatBtn";
+        catHTML.addEventListener("click",()  => {
+            category = "HTML";
             QuestionsCall()
         });
+        let iconHTML = document.createElement("i");
+        iconHTML.className = "fab fa-html5";
+        catHTML.appendChild(iconHTML);
 
-        let botonCiencia = document.createElement("button");
-        botonCiencia.innerText = "CIENCIA";
-        botonCiencia.setAttribute("id", "Ciencia");
-        botonCiencia.addEventListener("click", ()  => {
-            category = "Ciencia";
+        let catCSS = document.createElement("button");
+        // catCSS.innerText = "CSS";
+        catCSS.id = "cssCatBtn";
+        catCSS.addEventListener("click", ()  => {
+            category = "CSS";
             QuestionsCall()
         })
+        let iconCSS = document.createElement("i");
+        iconCSS.className = "fab fa-css3-alt";
+        catCSS.appendChild(iconCSS);
 
-        let botonArte = document.createElement("button");
-        botonArte.innerText = "ARTE";
-        botonArte.setAttribute("id", "Arte");
-        botonArte.addEventListener("click",()  => {
-            category = "Arte";
+        let catJS = document.createElement("button");
+        // catJS.innerText = "JS";
+        catJS.id = "jsCatBtn";
+        catJS.addEventListener("click",()  => {
+            category = "JS";
             QuestionsCall()
         });
+        let iconJS = document.createElement("i");
+        iconJS.className = "fab fa-js-square";
+        catJS.appendChild(iconJS);
 
-        bodySelector.appendChild(contenedorCategorias);
-        contenedorCategorias.appendChild(categoriasTitulo);
-        contenedorCategorias.appendChild(botonDeportes);
-        contenedorCategorias.appendChild(botonCiencia);
-        contenedorCategorias.appendChild(botonArte);
-
-
+        bodySelector.appendChild(CatContainer);
+        CatContainer.append(catHTML,catCSS,catJS);
 
         let contenedorModificarPreguntas = document.createElement("div");
 

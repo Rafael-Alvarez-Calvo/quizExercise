@@ -1,140 +1,97 @@
 {
     "PreguntasQuiz" : [
+
         {
-            "Deportes" : [
-                {
-                    "Img": "img/Deportes/laBombonera.jpg",
-                    "P" : "¿En qué país se encuentra el estadio popularmente conocido como La Bombonera?",
-                    "R" : ["Brasil","Colombia","Chile","Argentina"],
-                    "RespuestaCorrecta" : "3",
-                    "id" : 0
 
-                },
-                {
-                    "Img": "img/Deportes/f1sebastian.jpg",
-                    "P" : "¿Quién ganó cuatro mundiales consecutivos de Fórmula 1?",
-                    "R" : ["Rubens Barrichello","Jean Pierre Jabouille","Sebastián Vettel","Robert Kubica"],
-                    "RespuestaCorrecta" : "2",
-                    "id" : 1
-                },
-                {
-                    "Img": "img/Deportes/halterofilia.jpg",
-                    "P" : "¿Cómo se llama el deporte en el cual se levantan pesas?",
-                    "R" : ["Halterofilia","Hipertrofia","Hipocondria","Hiperlaxitud"],
-                    "RespuestaCorrecta" : "0",
-                    "id" : 2
-                },
-                {
-                    "Img": "img/Deportes/rugby.jpg",
-                    "P" : "¿Cuántos minutos dura un partido de rugby?",
-                    "R" : ["100","80","90","110"],
-                    "RespuestaCorrecta" : "1",
-                    "id" : 3
-                },
-                {
-                    "Img": "img/Deportes/laBombonera.jpg",
-                    "P" : "¿En qué país nacieron los dardos?",
-                    "R" : ["Dinamarca","Holanda","Italia","Inglaterra"],
-                    "RespuestaCorrecta" : "Inglaterra",
-                    "id" : 4
-                }
-                
+            "Img": "img/html/html1.png",
+            "P" : "What tag does an html document always start with?",
+            "R" : ["<doctype! html>","<html doctype!>","<!doctype html>","<html !doctype>"],
+            "RespuestaCorrecta" : "2",
+            "id" : 0,
+            "Cat" : "HTML"
 
-            ]
-            
         },
         {
-            "Ciencia" : [
-
-                {
-                    "Img": "img/Ciencia/celulas.jpg",
-                    "P" : "¿Cómo se llama el proceso por el cual una célula se divide para formar dos células hijas?",
-                    "R" : ["Segregación","Mitosis","Meiosis","Mitocondria"],
-                    "RespuestaCorrecta" : "Mitosis",
-                    "id" : 0
-                },
-                {
-                    "Img": "img/Ciencia/f1sebastian.jpg",
-                    "P" : "¿Qué nos permite saber el número atómico de un elemento?",
-                    "R" : ["Su ubicación en la tabla periódico","Sus propiedades físicas","La distribución de protones, electrones y neutrones en el átomo","Ninguna de las anteriores"],
-                    "RespuestaCorrecta" : "La distribución de protones, electrones y neutrones en el átomo",
-                    "id" : 1
-                },
-                {
-                    "Img": "img/Deportes/halterofilia.jpg",
-                    "P" : "¿Cómo se llama el deporte en el cual se levantan pesas?",
-                    "R" : ["Halterofilia","Hipertrofia","Hipocondria","Hiperlaxitud"],
-                    "RespuestaCorrecta" : "Halterofilia",
-                    "id" : 2
-                },
-                {
-                    "Img": "img/Deportes/rugby.jpg",
-                    "P" : "¿Cuántos minutos dura un partido de rugby?",
-                    "R" : ["100","80","90","110"],
-                    "RespuestaCorrecta" : "80",
-                    "id" : 3
-                },
-                {
-                    "Img": "img/Deportes/laBombonera.jpg",
-                    "P" : "¿En qué país nacieron los dardos?",
-                    "R" : ["Dinamarca","Holanda","Italia","Inglaterra"],
-                    "RespuestaCorrecta" : "Inglaterra",
-                    "id" : 4
-                }
-                
-
-            ]
-            
-            
+            "Img": "img/html/html2.png",
+            "P" : "What does the \"alt\" attribute mean in an image?",
+            "R" : ["Alternately displays the url of another image when the first one doesn't load","Write a text above the image to indicate its title","It is an informative text about the image that is not visible to the user","Used to specify alternative text for an image that cannot be displayed"],
+            "RespuestaCorrecta" : "3",
+            "id" : 1,
+            "Cat" : "HTML"
         },
         {
-            "Arte" : [
-                {
-                    "Img": "img/Deportes/laBombonera.jpg",
-                    "P" : "¿En qué país se encuentra el estadio popularmente conocido como La Bombonera?",
-                    "R" : ["Brasil","Colombia","Chile","Argentina"],
-                    "RespuestaCorrecta" : "Argentina",
-                    "id" : 0
-                },
-                {
-                    "Img": "img/Deportes/f1sebastian.jpg",
-                    "P" : "¿Quién ganó cuatro mundiales consecutivos de Fórmula 1?",
-                    "R" : ["Rubens Barrichello","Jean Pierre Jabouille","Sebastián Vettel","Robert Kubica"],
-                    "RespuestaCorrecta" : "Sebastián Vettel",
-                    "id" : 1
-                },
-                {
-                    "Img": "img/Deportes/halterofilia.jpg",
-                    "P" : "¿Cómo se llama el deporte en el cual se levantan pesas?",
-                    "R" : ["Halterofilia","Hipertrofia","Hipocondria","Hiperlaxitud"],
-                    "RespuestaCorrecta" : "Halterofilia",
-                    "id" : 2
-                },
-                {
-                    "Img": "img/Deportes/rugby.jpg",
-                    "P" : "¿Cuántos minutos dura un partido de rugby?",
-                    "R" : ["100","80","90","110"],
-                    "RespuestaCorrecta" : "80",
-                    "id" : 3
-                },
-                {
-                    "Img": "img/Deportes/laBombonera.jpg",
-                    "P" : "¿En qué país nacieron los dardos?",
-                    "R" : ["Dinamarca","Holanda","Italia","Inglaterra"],
-                    "RespuestaCorrecta" : "Inglaterra",
-                    "id" : 4
-                }
-                
-
-            ]
-            
-
+            "Img": "img/html/html3.png",
+            "P" : "The label used in a form for a dropdown field is...",
+            "R" : ["<dropdown>","<select>","<input type=\"select\">","<dropdown-list>"],
+            "RespuestaCorrecta" : "1",
+            "id" : 2,
+            "Cat" : "HTML"
+        },
+        {
+            "Img": "img/html/html4.png",
+            "P" : "What is the tag and what attributes are used to insert an image?",
+            "R" : ["<image url=\"myImage.jpg\">","<i alt=\"myImage.jpg\">","<img src=\"myImage.jpg\">","<img link=\"myImage.jpg\">"],
+            "RespuestaCorrecta" : "2",
+            "id" : 3,
+            "Cat" : "HTML"
+        },
+        {
+            "Img": "img/html/html5.png",
+            "P" : "How do you write a comment in HTML?",
+            "R" : ["// comment","<!-- comment -->","-- comment","/* comment */"],
+            "RespuestaCorrecta" : "1",
+            "id" : 4,
+            "Cat" : "HTML"
+        },
+        {
+            "Img": "img/css/css1.png",
+            "P" : "What is wrong with this style rule ?:",
+            "R" : ["// comment","/* comment */","<!-- comment -->","-- comment"],
+            "RespuestaCorrecta" : "1",
+            "id" : 5,
+            "Cat" : "CSS"
+        },
+        {
+            "Img": "img/css/css2.png",
+            "P" : "What is wrong with this style rule?",
+            "R" : ["A ';' is missing (semicolon) at the end of the declaration of the style 'border'","You cannot put a '.' at the beginning of a statement (before the word 'box)'","The 'border' property can only be given one value and not 3 as it appears here: 1px, blue and dotted","Missing a ',' (comma) between the two values ​​of the padding property (10px 5px)"],
+            "RespuestaCorrecta" : "0",
+            "id" : 6,
+            "Cat" : "CSS"
+        },
+        {
+            "Img": "img/css/css3.png",
+            "P" : "How do you define a background color for all 'p' tags in CSS?",
+            "R" : ["p.all {background-color:red;}","#p {background-color:red;}","p {background-color:red;}",".p {background-color:red;}"],
+            "RespuestaCorrecta" : "2",
+            "id" : 7,
+            "Cat" : "CSS"
+        },
+        {
+            "Img": "img/css/css4.png",
+            "P" : "What property define the space between the border of an element and the elements that surround it?",
+            "R" : ["margin","padding","border","None of the above"],
+            "RespuestaCorrecta" : "0",
+            "id" : 8,
+            "Cat" : "CSS"
+        },
+        {
+            "Img": "img/css/css5.png",
+            "P" : "What property is used to change the font of an element?",
+            "R" : ["text-type","font-family","font-type","text-family"],
+            "RespuestaCorrecta" : "1",
+            "id" : 9,
+            "Cat" : "CSS"
         }
-    ],
+            
 
+    ],
+            
     "Jugadores" : [
         {    
-            "Nick" : "", 
+            "Nick" : "admin",
+            "Email" : "rafael.alvarez@hotmail.es",
+            "Psw" : "admin", 
             "Deportes" : 0,  
             "Ciencia" : 0,
             "Arte" : 0
