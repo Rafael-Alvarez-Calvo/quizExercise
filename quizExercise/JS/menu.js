@@ -475,15 +475,37 @@ async function entrarAlMenu(){
             node.remove();  
         })
 
+        let optionsContainer = document.createElement("div");
+        optionsContainer.id = "optionsContainer";
+        
+        let linkToModQuestions = document.createElement("a");
+        linkToModQuestions.id = "linkToModQuestions";
+        linkToModQuestions.href = "#";
+        let iconSettings = document.createElement("i");
+        iconSettings.id = "iconSettings";
+        iconSettings.className = "fas fa-cogs";
+        linkToModQuestions.appendChild(iconSettings);
+
+        let smallLogoMenu = document.createElement("img");
+        smallLogoMenu.id = "smallLogoMenu";
+        smallLogoMenu.src = "img/Logo-Quizz-pro.png";
+
+        
+        let linkToLogOut = document.createElement("a");
+        linkToLogOut.id = "linkToLogOut";
+        linkToLogOut.href = "#";
+        let iconLogOut = document.createElement("i");
+        iconLogOut.id = "iconLogOut";
+        iconLogOut.className = "fas fa-sign-out-alt";
+        linkToLogOut.appendChild(iconLogOut);
+        
         let CatContainer = document.createElement("div");
         CatContainer.id = "CatContainer";
-
         // let categoryTitle = document.createElement("h1");
         // categoryTitle.id = "categoryTitle";
-        // categoryTitle.innerText = "Elige categoria";
+        // categoryTitle.innerText = "CHOOSE CATEGORY";
 
         let catHTML = document.createElement("button");
-        // catHTML.innerText = "HTML";
         catHTML.id = "htmlCatBtn";
         catHTML.addEventListener("click",()  => {
             category = "HTML";
@@ -494,7 +516,6 @@ async function entrarAlMenu(){
         catHTML.appendChild(iconHTML);
 
         let catCSS = document.createElement("button");
-        // catCSS.innerText = "CSS";
         catCSS.id = "cssCatBtn";
         catCSS.addEventListener("click", ()  => {
             category = "CSS";
@@ -505,7 +526,6 @@ async function entrarAlMenu(){
         catCSS.appendChild(iconCSS);
 
         let catJS = document.createElement("button");
-        // catJS.innerText = "JS";
         catJS.id = "jsCatBtn";
         catJS.addEventListener("click",()  => {
             category = "JS";
@@ -515,24 +535,14 @@ async function entrarAlMenu(){
         iconJS.className = "fab fa-js-square";
         catJS.appendChild(iconJS);
 
+        bodySelector.prepend(optionsContainer);
+        optionsContainer.append(linkToModQuestions,smallLogoMenu,linkToLogOut);
         bodySelector.appendChild(CatContainer);
         CatContainer.append(catHTML,catCSS,catJS);
 
-        let contenedorModificarPreguntas = document.createElement("div");
+        document.getElementById("linkToModQuestions").addEventListener("click", async(e) =>{
 
-        let modPreguntaLabel = document.createElement("h3");
-
-        modPreguntaLabel.innerText = "¿Te gustaría modificar, añadir o borrar alguna pregunta?";
-
-        let botonIrModPreguntas = document.createElement("button");
-        botonIrModPreguntas.innerText = "Modificar/Añadir/Borrar Pregunta";
-        botonIrModPreguntas.setAttribute("id", "botonIrModPreguntas")
-
-        bodySelector.appendChild(contenedorModificarPreguntas);
-        contenedorModificarPreguntas.appendChild(modPreguntaLabel);
-        contenedorModificarPreguntas.appendChild(botonIrModPreguntas);
-
-        document.getElementById("botonIrModPreguntas").addEventListener("click", async() =>{
+            e.preventDefault();
 
             PintarFormAñadirPregunta();
 
@@ -929,7 +939,7 @@ function pintarPreguntas(content,image){
 
     let numeroPregunta = document.createElement("h1");
     numeroPregunta.className = "numeroPregunta";
-    numeroPregunta.innerText = `Pregunta ${numero}`;
+    numeroPregunta.innerText = `Question ${numero}`;
 
     bodySelector.prepend(contenedorNumeroPregunta);
 
@@ -946,13 +956,9 @@ function pintarRespuestas(content){
     for (let i = 0; i < content.length; i++) {
 
         let inputs = document.createElement("button");
-        
-        inputs.tagName = "button"
         inputs.innerText = content[i];
-        inputs.setAttribute("id", i);
-        inputs.setAttribute("type", "button");
-        inputs.setAttribute("name", "respuesta");
-        // inputs.setAttribute("value", content[i]);
+        inputs.id = i;
+        inputs.className = "inputsAnswers";
 
         formulario.appendChild(divRespuestas);
         divRespuestas.appendChild(inputs);
@@ -967,7 +973,7 @@ function comprobarResultado(contenido){
     botones.forEach((boton) =>{
         
         boton.addEventListener("click", (e) =>{
-
+            e.preventDefault();
             if(e.target.id == contenido[contadorPregunta].RespuestaCorrecta){
         
                 e.target.className = "button green";
@@ -983,14 +989,14 @@ function comprobarResultado(contenido){
                     if(contadorPregunta < contenido.length){
                         
                         document.querySelector("form").remove();
-                        document.querySelector("button").remove;
+                        // document.querySelector("button").remove();
                         // QuestionCall();
                         QuestionsCall(category);
                         
                     }else{
                         
                         document.querySelector("form").remove();
-                        document.querySelector("button").remove;
+                        document.querySelector("button").remove();
                     }
                             
                 }, 1000);
@@ -1020,14 +1026,14 @@ function comprobarResultado(contenido){
                     if(contadorPregunta < contenido.length){
         
                         document.querySelector("form").remove();
-                        document.querySelector("button").remove;
+                        // document.querySelector("button").remove();
                         QuestionsCall();
                         
         
                     }else{
         
                         document.querySelector("form").remove();
-                        document.querySelector("button").remove;
+                        document.querySelector("button").remove();
                         
                     }
             
@@ -1048,6 +1054,11 @@ async function QuestionsCall(){
         node.remove();  
     })
 
+    let selectorContainerBackMenu = document.querySelector("#containerBtnBackMenu");
+
+    if(selectorContainerBackMenu)
+        selectorContainerBackMenu.remove();
+
     //Realizamos llamada asincrona de la funcion que comunica cvon el server para proporcionarnos las preguntas de deportes
     let Questions = await getQuestions(category);
 
@@ -1057,12 +1068,22 @@ async function QuestionsCall(){
     comprobarResultado(Questions);
 
     //Creamos y damos funcionalidad al boton de volver atras
-    let botonBackMenu = document.createElement("button");
-    botonBackMenu.innerText = "MENÚ";
+    let containerBtnBackMenu = document.createElement("div");
+    containerBtnBackMenu.id = "containerBtnBackMenu";
+    let linkToBackMenu = document.createElement("a");
+    linkToBackMenu.id = "linkToBackMenu";
+    linkToBackMenu.href = "#";
+    let botonBackMenu = document.createElement("img");
+    botonBackMenu.src = "img/Logo-Quizz-pro.png";
     botonBackMenu.id = "botonBackMenu";
-    bodySelector.appendChild(botonBackMenu)
 
-    botonBackMenu.addEventListener("click", () =>{
+    bodySelector.prepend(containerBtnBackMenu);
+    containerBtnBackMenu.appendChild(linkToBackMenu);
+    linkToBackMenu.appendChild(botonBackMenu);
+
+    botonBackMenu.addEventListener("click", (e) =>{
+
+        e.preventDefault();
 
         setTimeout(() =>{
 
@@ -1071,7 +1092,7 @@ async function QuestionsCall(){
             })
 
             document.querySelector("form").remove();
-            document.querySelector("#botonBackMenu").remove();
+            // document.querySelector("#containerBtnBackMenu").remove();
 
             numero = 0;
     
