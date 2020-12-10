@@ -315,7 +315,8 @@ server.post("/LogIn", (req, res) =>{
         if (dbPlayers[i]){
 
             const {Psw,...payload} = dbPlayers[i]; //obviar la psw
-            res.send({msg : "foundUser", temporaryJWT : generateJWT({payload, ip : req.ip})})
+            res.send({msg : "foundUser", temporaryJWT : generateJWT({payload, ip : req.ip})
+            });
 
         }else{}
             
